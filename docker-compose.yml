@@ -1,0 +1,21 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: recoai-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: recoai
+      POSTGRES_USER: recoai
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    ports:
+      - "5432:5432"
+    volumes:
+      - recoai_pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U recoai -d recoai"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+volumes:
+  recoai_pgdata:

@@ -1,0 +1,16 @@
+{
+  "entity": "collection",
+  "count": 1,
+  "items": [
+    {
+      "id": "setl_demo_001",
+      "entity": "settlement",
+      "amount": 152400,
+      "status": "processed",
+      "fees": 300,
+      "tax": 54,
+      "utr": "DEMOAXIS001",
+      "created_at": 1763019089
+    }
+  ]
+}

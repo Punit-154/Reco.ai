@@ -1,0 +1,1489 @@
+{
+  "fixture_version": "synthetic-v1",
+  "seed": 303,
+  "counts": {
+    "total": 100,
+    "perfect_match": 20,
+    "fee_deduction": 15,
+    "partial_refund": 20,
+    "duplicate_utr": 20,
+    "unrecognized_credit": 25
+  },
+  "cases": {
+    "8ab4a92882785029b28df30f7f101f81": {
+      "case_type": "perfect_match",
+      "expected_outcome": "auto_match",
+      "source_ids": {
+        "razorpay": [
+          "setl_0bf4a779226f57fa"
+        ],
+        "bank": [
+          "BNKA44CB77843425C"
+        ],
+        "ledger": [
+          "LDG6ED6ABD8F2D153"
+        ]
+      },
+      "expected_strategy": "UTR_EXACT"
+    },
+    "5a59f3aac6685f7993c9f91f18392ae1": {
+      "case_type": "perfect_match",
+      "expected_outcome": "auto_match",
+      "source_ids": {
+        "razorpay": [
+          "setl_27bf05495afd577c"
+        ],
+        "bank": [
+          "BNK86D57FB730AC51"
+        ],
+        "ledger": [
+          "LDGF747410F06B355"
+        ]
+      },
+      "expected_strategy": "UTR_EXACT"
+    },
+    "a360504b915653a9b6d935e12934d276": {
+      "case_type": "perfect_match",
+      "expected_outcome": "auto_match",
+      "source_ids": {
+        "razorpay": [
+          "setl_51367c7b1f885daa"
+        ],
+        "bank": [
+          "BNK37C936B595925A"
+        ],
+        "ledger": [
+          "LDGA3373066FC345C"
+        ]
+      },
+      "expected_strategy": "UTR_EXACT"
+    },
+    "6635f29c12595191b5f20f2c1c268e17": {
+      "case_type": "perfect_match",
+      "expected_outcome": "auto_match",
+      "source_ids": {
+        "razorpay": [
+          "setl_63363cbeec1b5462"
+        ],
+        "bank": [
+          "BNK0041E9D89CE350"
+        ],
+        "ledger": [
+          "LDG8D6530379AD257"
+        ]
+      },
+      "expected_strategy": "UTR_EXACT"
+    },
+    "ce6e70e3a3685a8b9d9ea75f5a52b469": {
+      "case_type": "perfect_match",
+      "expected_outcome": "auto_match",
+      "source_ids": {
+        "razorpay": [
+          "setl_c92a9958e2dc5e03"
+        ],
+        "bank": [
+          "BNK7B81FCE7164B5A"
+        ],
+        "ledger": [
+          "LDG1508947F17EF55"
+        ]
+      },
+      "expected_strategy": "UTR_EXACT"
+    },
+    "a95cd2341d535d508b43d6f643af37e5": {
+      "case_type": "perfect_match",
+      "expected_outcome": "auto_match",
+      "source_ids": {
+        "razorpay": [
+          "setl_c20d502410d65047"
+        ],
+        "bank": [
+          "BNK44037F21CB315E"
+        ],
+        "ledger": [
+          "LDGE0DF4CCE376357"
+        ]
+      },
+      "expected_strategy": "UTR_EXACT"
+    },
+    "7c061f134ef55548adace484091ffc11": {
+      "case_type": "perfect_match",
+      "expected_outcome": "auto_match",
+      "source_ids": {
+        "razorpay": [
+          "setl_cd0fe8b9daff5e37"
+        ],
+        "bank": [
+          "BNK0EA56F0A6F0454"
+        ],
+        "ledger": [
+          "LDGAC58281E9DA556"
+        ]
+      },
+      "expected_strategy": "UTR_EXACT"
+    },
+    "c39b69bcd7da51969a8bdb82a7b2b10a": {
+      "case_type": "perfect_match",
+      "expected_outcome": "auto_match",
+      "source_ids": {
+        "razorpay": [
+          "setl_0c665698382d5a01"
+        ],
+        "bank": [
+          "BNK3804D6D1B04C58"
+        ],
+        "ledger": [
+          "LDG717AA069D66E59"
+        ]
+      },
+      "expected_strategy": "UTR_EXACT"
+    },
+    "96ab5d179f7958f38ea30c583b22c284": {
+      "case_type": "perfect_match",
+      "expected_outcome": "auto_match",
+      "source_ids": {
+        "razorpay": [
+          "setl_bac5f5d4c864564c"
+        ],
+        "bank": [
+          "BNKE8E53C711B8553"
+        ],
+        "ledger": [
+          "LDGA4803998395357"
+        ]
+      },
+      "expected_strategy": "UTR_EXACT"
+    },
+    "8f9a420b059e5a32992dd392497ac739": {
+      "case_type": "perfect_match",
+      "expected_outcome": "auto_match",
+      "source_ids": {
+        "razorpay": [
+          "setl_7afe2b99db75530e"
+        ],
+        "bank": [
+          "BNKFCC4A37BFB905A"
+        ],
+        "ledger": [
+          "LDGF138F21346DA51"
+        ]
+      },
+      "expected_strategy": "UTR_EXACT"
+    },
+    "eb4c427124715f49ba4b3899c5e61f09": {
+      "case_type": "perfect_match",
+      "expected_outcome": "auto_match",
+      "source_ids": {
+        "razorpay": [
+          "setl_752ad2e04e555817"
+        ],
+        "bank": [
+          "BNKD276096B74A357"
+        ],
+        "ledger": [
+          "LDG3D259693833352"
+        ]
+      },
+      "expected_strategy": "UTR_EXACT"
+    },
+    "f8c013ca47495fddb53d9315f67a39c6": {
+      "case_type": "perfect_match",
+      "expected_outcome": "auto_match",
+      "source_ids": {
+        "razorpay": [
+          "setl_16ceea52fbb557a4"
+        ],
+        "bank": [
+          "BNK49211A35CFAD5C"
+        ],
+        "ledger": [
+          "LDG0FC42624A23253"
+        ]
+      },
+      "expected_strategy": "UTR_EXACT"
+    },
+    "252ebf008f2758b09893f8d5bb2d47a7": {
+      "case_type": "perfect_match",
+      "expected_outcome": "auto_match",
+      "source_ids": {
+        "razorpay": [
+          "setl_5b1255f156195756"
+        ],
+        "bank": [
+          "BNK46EE92BE3A7457"
+        ],
+        "ledger": [
+          "LDG3BDCC0B9303355"
+        ]
+      },
+      "expected_strategy": "UTR_EXACT"
+    },
+    "9b63d15e8b085f6e82d8191f6f2f5d07": {
+      "case_type": "perfect_match",
+      "expected_outcome": "auto_match",
+      "source_ids": {
+        "razorpay": [
+          "setl_46e6a83e1d825c88"
+        ],
+        "bank": [
+          "BNK825C929CC76752"
+        ],
+        "ledger": [
+          "LDG082110F83A6F55"
+        ]
+      },
+      "expected_strategy": "UTR_EXACT"
+    },
+    "96edee8b47d251bc929d903b13790804": {
+      "case_type": "perfect_match",
+      "expected_outcome": "auto_match",
+      "source_ids": {
+        "razorpay": [
+          "setl_df0b1e6d09da52c8"
+        ],
+        "bank": [
+          "BNKB5CB276C2CA05E"
+        ],
+        "ledger": [
+          "LDG7EEFC6EA64AF56"
+        ]
+      },
+      "expected_strategy": "UTR_EXACT"
+    },
+    "1440adc970685f9186ae6f0acdb701e2": {
+      "case_type": "perfect_match",
+      "expected_outcome": "auto_match",
+      "source_ids": {
+        "razorpay": [
+          "setl_fed83cfcb26d5e68"
+        ],
+        "bank": [
+          "BNK6E19445782F05A"
+        ],
+        "ledger": [
+          "LDG8E6CAB1602FF57"
+        ]
+      },
+      "expected_strategy": "UTR_EXACT"
+    },
+    "951bb0f5a00c524ba9be85622f0ed359": {
+      "case_type": "perfect_match",
+      "expected_outcome": "auto_match",
+      "source_ids": {
+        "razorpay": [
+          "setl_a832f2e677395035"
+        ],
+        "bank": [
+          "BNK30A502419E3D5C"
+        ],
+        "ledger": [
+          "LDG04B9E5C29E935B"
+        ]
+      },
+      "expected_strategy": "UTR_EXACT"
+    },
+    "73e55d0b20105a47a2d469c41a849baa": {
+      "case_type": "perfect_match",
+      "expected_outcome": "auto_match",
+      "source_ids": {
+        "razorpay": [
+          "setl_d14b4125e614563f"
+        ],
+        "bank": [
+          "BNK440B1F836AD553"
+        ],
+        "ledger": [
+          "LDG078FB47417345E"
+        ]
+      },
+      "expected_strategy": "UTR_EXACT"
+    },
+    "3389ec9ab70f5675a5996597b0d561a0": {
+      "case_type": "perfect_match",
+      "expected_outcome": "auto_match",
+      "source_ids": {
+        "razorpay": [
+          "setl_977c63584fc15a4c"
+        ],
+        "bank": [
+          "BNK75FB353DDCE054"
+        ],
+        "ledger": [
+          "LDG860ADC10CAE851"
+        ]
+      },
+      "expected_strategy": "UTR_EXACT"
+    },
+    "e4acf29ae97b5233995527c4b6031bd9": {
+      "case_type": "perfect_match",
+      "expected_outcome": "auto_match",
+      "source_ids": {
+        "razorpay": [
+          "setl_3c1a305c1c6d5f01"
+        ],
+        "bank": [
+          "BNK0A2A7BBDB0F353"
+        ],
+        "ledger": [
+          "LDG98344503E9F654"
+        ]
+      },
+      "expected_strategy": "UTR_EXACT"
+    },
+    "10cc7896112854b8a72826df60cdcfc6": {
+      "case_type": "fee_deduction",
+      "expected_outcome": "auto_match",
+      "source_ids": {
+        "razorpay": [
+          "setl_7390ea79aa5a52f0"
+        ],
+        "bank": [
+          "BNK75421AE7492B5B"
+        ],
+        "ledger": [
+          "LDG5CB17D625D3555"
+        ]
+      },
+      "expected_strategy": "LEDGER_NET_EXACT"
+    },
+    "acd64537f99b531594e6ae9592ed426c": {
+      "case_type": "fee_deduction",
+      "expected_outcome": "auto_match",
+      "source_ids": {
+        "razorpay": [
+          "setl_a4fc028064d45f89"
+        ],
+        "bank": [
+          "BNK6ED11422CC395C"
+        ],
+        "ledger": [
+          "LDG23D7E3EF55155F"
+        ]
+      },
+      "expected_strategy": "LEDGER_NET_EXACT"
+    },
+    "839b724e14925a44ba4595ba735482ac": {
+      "case_type": "fee_deduction",
+      "expected_outcome": "auto_match",
+      "source_ids": {
+        "razorpay": [
+          "setl_f1dabb20752b5717"
+        ],
+        "bank": [
+          "BNKEEE1986DC14C5C"
+        ],
+        "ledger": [
+          "LDG980257736D5F5A"
+        ]
+      },
+      "expected_strategy": "LEDGER_NET_EXACT"
+    },
+    "f7de8fa8f7ed56f597f19f90e3b885cf": {
+      "case_type": "fee_deduction",
+      "expected_outcome": "auto_match",
+      "source_ids": {
+        "razorpay": [
+          "setl_251235bf96c2521a"
+        ],
+        "bank": [
+          "BNKBE578ED49DD25A"
+        ],
+        "ledger": [
+          "LDGC8000C09CA3955"
+        ]
+      },
+      "expected_strategy": "LEDGER_NET_EXACT"
+    },
+    "1e128878d64d55c6a3a59faf98e4a739": {
+      "case_type": "fee_deduction",
+      "expected_outcome": "auto_match",
+      "source_ids": {
+        "razorpay": [
+          "setl_cc0b9f538f1f5804"
+        ],
+        "bank": [
+          "BNK3965702257B45D"
+        ],
+        "ledger": [
+          "LDGD9991DB8F2B75C"
+        ]
+      },
+      "expected_strategy": "LEDGER_NET_EXACT"
+    },
+    "65b0ad746c9059b4b6576e042b139ca8": {
+      "case_type": "fee_deduction",
+      "expected_outcome": "auto_match",
+      "source_ids": {
+        "razorpay": [
+          "setl_3b51d90cf97254d8"
+        ],
+        "bank": [
+          "BNK4AE9E927273556"
+        ],
+        "ledger": [
+          "LDGCD759A5C8D8F57"
+        ]
+      },
+      "expected_strategy": "LEDGER_NET_EXACT"
+    },
+    "911e90b30cdd5d45931eb9164041c13d": {
+      "case_type": "fee_deduction",
+      "expected_outcome": "auto_match",
+      "source_ids": {
+        "razorpay": [
+          "setl_cf04732334f0510e"
+        ],
+        "bank": [
+          "BNK6AF3FCA3850D58"
+        ],
+        "ledger": [
+          "LDGD1FF8D693F0652"
+        ]
+      },
+      "expected_strategy": "LEDGER_NET_EXACT"
+    },
+    "8a1f645895695ea09c8173dcaab5b5e4": {
+      "case_type": "fee_deduction",
+      "expected_outcome": "auto_match",
+      "source_ids": {
+        "razorpay": [
+          "setl_36535563567e54e9"
+        ],
+        "bank": [
+          "BNKECC98FB9511152"
+        ],
+        "ledger": [
+          "LDG91D93B66A57454"
+        ]
+      },
+      "expected_strategy": "LEDGER_NET_EXACT"
+    },
+    "05068f0365205f53a845aa0e87bed5b6": {
+      "case_type": "fee_deduction",
+      "expected_outcome": "auto_match",
+      "source_ids": {
+        "razorpay": [
+          "setl_9e4495a11573576b"
+        ],
+        "bank": [
+          "BNKEE0364D2C0D15B"
+        ],
+        "ledger": [
+          "LDG74685EB2EEA753"
+        ]
+      },
+      "expected_strategy": "LEDGER_NET_EXACT"
+    },
+    "3f8c0533c0f15d26a73cd5a0564f81ee": {
+      "case_type": "fee_deduction",
+      "expected_outcome": "auto_match",
+      "source_ids": {
+        "razorpay": [
+          "setl_dca860227d2259b3"
+        ],
+        "bank": [
+          "BNK616A7978AA225F"
+        ],
+        "ledger": [
+          "LDG491390DF26CE54"
+        ]
+      },
+      "expected_strategy": "LEDGER_NET_EXACT"
+    },
+    "91ad1f31475a5761a0628de9b9ce97d2": {
+      "case_type": "fee_deduction",
+      "expected_outcome": "auto_match",
+      "source_ids": {
+        "razorpay": [
+          "setl_2822d2e3c88c5ac3"
+        ],
+        "bank": [
+          "BNKE82B167B48F652"
+        ],
+        "ledger": [
+          "LDG94196301196356"
+        ]
+      },
+      "expected_strategy": "LEDGER_NET_EXACT"
+    },
+    "2e62a7d1a59b5169b9aab362e34da922": {
+      "case_type": "fee_deduction",
+      "expected_outcome": "auto_match",
+      "source_ids": {
+        "razorpay": [
+          "setl_fbdc7f5f65d85cb9"
+        ],
+        "bank": [
+          "BNKFCC6C7DFCC7054"
+        ],
+        "ledger": [
+          "LDGA5F01243931D5C"
+        ]
+      },
+      "expected_strategy": "LEDGER_NET_EXACT"
+    },
+    "d0315e4529245ba98286ddc482c3861c": {
+      "case_type": "fee_deduction",
+      "expected_outcome": "auto_match",
+      "source_ids": {
+        "razorpay": [
+          "setl_eb396479064358cf"
+        ],
+        "bank": [
+          "BNK8BE14E079EE354"
+        ],
+        "ledger": [
+          "LDG3F77F814C7055F"
+        ]
+      },
+      "expected_strategy": "LEDGER_NET_EXACT"
+    },
+    "f3387b5bc2d859f1ba1351fbab761837": {
+      "case_type": "fee_deduction",
+      "expected_outcome": "auto_match",
+      "source_ids": {
+        "razorpay": [
+          "setl_f4c83bf4a45e51f2"
+        ],
+        "bank": [
+          "BNKCDC6DA48118C5D"
+        ],
+        "ledger": [
+          "LDGE742A59A63655C"
+        ]
+      },
+      "expected_strategy": "LEDGER_NET_EXACT"
+    },
+    "893704d568ee5041ab9b7e7c3b9250cf": {
+      "case_type": "fee_deduction",
+      "expected_outcome": "auto_match",
+      "source_ids": {
+        "razorpay": [
+          "setl_625c07e13bfe5a4b"
+        ],
+        "bank": [
+          "BNKD23F82F20BC15C"
+        ],
+        "ledger": [
+          "LDGB7C58064CB4350"
+        ]
+      },
+      "expected_strategy": "LEDGER_NET_EXACT"
+    },
+    "a8d8d797d82e515085d8d7213cd57778": {
+      "case_type": "partial_refund",
+      "expected_outcome": "review_required",
+      "source_ids": {
+        "razorpay": [
+          "setl_97b77aae2b79555c"
+        ],
+        "bank": [
+          "BNKF57D43FF146F55"
+        ],
+        "ledger": [
+          "LDG6A6F027BB74350"
+        ]
+      }
+    },
+    "70f9ba6839e85cfeae18ecb23e121cd0": {
+      "case_type": "partial_refund",
+      "expected_outcome": "review_required",
+      "source_ids": {
+        "razorpay": [
+          "setl_b363a60a0eeb555e"
+        ],
+        "bank": [
+          "BNKA635B7DF9F445B"
+        ],
+        "ledger": [
+          "LDG1D99139067E159"
+        ]
+      }
+    },
+    "b38e20cd1bcb5030a287bb1e569a30a8": {
+      "case_type": "partial_refund",
+      "expected_outcome": "review_required",
+      "source_ids": {
+        "razorpay": [
+          "setl_5d88e6a7b7ab5f5f"
+        ],
+        "bank": [
+          "BNK3CE6536DEC7754"
+        ],
+        "ledger": [
+          "LDGBEC271CF2B0656"
+        ]
+      }
+    },
+    "d43f8560de6551118d1879bc4737a3bd": {
+      "case_type": "partial_refund",
+      "expected_outcome": "review_required",
+      "source_ids": {
+        "razorpay": [
+          "setl_b45b59c2cd835563"
+        ],
+        "bank": [
+          "BNK36B8CB27F1D85C"
+        ],
+        "ledger": [
+          "LDGDC7AE0B4CDC85D"
+        ]
+      }
+    },
+    "7ee34b90bcf650f4959773aed49eee35": {
+      "case_type": "partial_refund",
+      "expected_outcome": "review_required",
+      "source_ids": {
+        "razorpay": [
+          "setl_b77ab89250a15788"
+        ],
+        "bank": [
+          "BNK4676501036A352"
+        ],
+        "ledger": [
+          "LDG56BEB95147B557"
+        ]
+      }
+    },
+    "e19dfc74e40a548086ab3e0031302847": {
+      "case_type": "partial_refund",
+      "expected_outcome": "review_required",
+      "source_ids": {
+        "razorpay": [
+          "setl_631d250fd3f6544b"
+        ],
+        "bank": [
+          "BNK3D2AFB56B3FB5B"
+        ],
+        "ledger": [
+          "LDG60A698125C1557"
+        ]
+      }
+    },
+    "11a29d5e59195956ae808f94ed40de6b": {
+      "case_type": "partial_refund",
+      "expected_outcome": "review_required",
+      "source_ids": {
+        "razorpay": [
+          "setl_5cc19e6c8ae75751"
+        ],
+        "bank": [
+          "BNK7A6EEB70C54757"
+        ],
+        "ledger": [
+          "LDG0C86835EA26552"
+        ]
+      }
+    },
+    "863fc1acf5045178bcfde218999e3311": {
+      "case_type": "partial_refund",
+      "expected_outcome": "review_required",
+      "source_ids": {
+        "razorpay": [
+          "setl_a62385eeaa605952"
+        ],
+        "bank": [
+          "BNKCBE12ACC170C50"
+        ],
+        "ledger": [
+          "LDGBB9D98CC75AB54"
+        ]
+      }
+    },
+    "084d7f1cafab52dfbd8313974b53cd5f": {
+      "case_type": "partial_refund",
+      "expected_outcome": "review_required",
+      "source_ids": {
+        "razorpay": [
+          "setl_5e0d3ddc8dff5db9"
+        ],
+        "bank": [
+          "BNK9A7ABF6C92925D"
+        ],
+        "ledger": [
+          "LDGECFA3078BA2D5F"
+        ]
+      }
+    },
+    "9fe4f371cf6a5ee9a2b591479f43345b": {
+      "case_type": "partial_refund",
+      "expected_outcome": "review_required",
+      "source_ids": {
+        "razorpay": [
+          "setl_0bcea8aef36d52cf"
+        ],
+        "bank": [
+          "BNKF39558915AE353"
+        ],
+        "ledger": [
+          "LDGA39CDF3C4A425B"
+        ]
+      }
+    },
+    "f26f15809d095a05966ee2f383e28801": {
+      "case_type": "partial_refund",
+      "expected_outcome": "review_required",
+      "source_ids": {
+        "razorpay": [
+          "setl_6c94274920365df0"
+        ],
+        "bank": [
+          "BNKF28A536BC40E5A"
+        ],
+        "ledger": [
+          "LDGE8D66093B02F54"
+        ]
+      }
+    },
+    "20fb57fca31d551daccffe3545ee29bb": {
+      "case_type": "partial_refund",
+      "expected_outcome": "review_required",
+      "source_ids": {
+        "razorpay": [
+          "setl_0e7a6c90ef51542a"
+        ],
+        "bank": [
+          "BNKECDD5768250A5B"
+        ],
+        "ledger": [
+          "LDG9FADCE03B7565A"
+        ]
+      }
+    },
+    "e06caaa73bb5556cb137c711b81ce56f": {
+      "case_type": "partial_refund",
+      "expected_outcome": "review_required",
+      "source_ids": {
+        "razorpay": [
+          "setl_c3e854923fd251b4"
+        ],
+        "bank": [
+          "BNK9C990C6B663259"
+        ],
+        "ledger": [
+          "LDG41ECB69E4A9C5C"
+        ]
+      }
+    },
+    "33823d94028b5316aedb68ece0a72b41": {
+      "case_type": "partial_refund",
+      "expected_outcome": "review_required",
+      "source_ids": {
+        "razorpay": [
+          "setl_4d1363e70d1f5d0d"
+        ],
+        "bank": [
+          "BNK9D289A11384358"
+        ],
+        "ledger": [
+          "LDG7F8AA45FA99851"
+        ]
+      }
+    },
+    "971f6199c1cd551cad77ceeacaf6a886": {
+      "case_type": "partial_refund",
+      "expected_outcome": "review_required",
+      "source_ids": {
+        "razorpay": [
+          "setl_1c02bb5f31285a83"
+        ],
+        "bank": [
+          "BNKAC923581EE7157"
+        ],
+        "ledger": [
+          "LDG5A5952768C9359"
+        ]
+      }
+    },
+    "659b40dcb6fe5b94bbf7c2062516a65e": {
+      "case_type": "partial_refund",
+      "expected_outcome": "review_required",
+      "source_ids": {
+        "razorpay": [
+          "setl_a419ca70b9bd5cb8"
+        ],
+        "bank": [
+          "BNKB9BDC5BE317057"
+        ],
+        "ledger": [
+          "LDG9C5ACCE2EB8A58"
+        ]
+      }
+    },
+    "11ccccae5dd35b928afaac3be11b91c0": {
+      "case_type": "partial_refund",
+      "expected_outcome": "review_required",
+      "source_ids": {
+        "razorpay": [
+          "setl_6aebf4e77953562c"
+        ],
+        "bank": [
+          "BNK7D2C4CC70D7059"
+        ],
+        "ledger": [
+          "LDG1DA70B0AEFCC5B"
+        ]
+      }
+    },
+    "10bbccee36e253cab74fbf8e94fb23f3": {
+      "case_type": "partial_refund",
+      "expected_outcome": "review_required",
+      "source_ids": {
+        "razorpay": [
+          "setl_bfc6c58b4d715ef4"
+        ],
+        "bank": [
+          "BNK0778F38047B554"
+        ],
+        "ledger": [
+          "LDG2F3BFF0F84875E"
+        ]
+      }
+    },
+    "ee9ba6d17f135ca28a70d3bc0e2fe365": {
+      "case_type": "partial_refund",
+      "expected_outcome": "review_required",
+      "source_ids": {
+        "razorpay": [
+          "setl_fa7514b5e8ce5001"
+        ],
+        "bank": [
+          "BNKEB0C7F1276FA5A"
+        ],
+        "ledger": [
+          "LDGB9C282338C1651"
+        ]
+      }
+    },
+    "fd881c88a9b55849a5ddb0f8e3083619": {
+      "case_type": "partial_refund",
+      "expected_outcome": "review_required",
+      "source_ids": {
+        "razorpay": [
+          "setl_2848c3dac6475970"
+        ],
+        "bank": [
+          "BNK391C58B2C08956"
+        ],
+        "ledger": [
+          "LDG6B6D616B087652"
+        ]
+      }
+    },
+    "a96aba9049575cd49b334b197e3443ba": {
+      "case_type": "duplicate_utr",
+      "expected_outcome": "never_auto_match",
+      "source_ids": {
+        "razorpay": [
+          "setl_c378ebb9d0875699",
+          "setl_a86aadbcd9b05637"
+        ],
+        "bank": [
+          "BNKE8AC7650030455"
+        ],
+        "ledger": [
+          "LDG5A255CE6E9D458"
+        ]
+      },
+      "expected_strategy": "DUPLICATE_UTR_REVIEW"
+    },
+    "a8d73713dc7c5a46a805a0ccdd4821da": {
+      "case_type": "duplicate_utr",
+      "expected_outcome": "never_auto_match",
+      "source_ids": {
+        "razorpay": [
+          "setl_750fe2727e4757c1",
+          "setl_f0674fb5ef0855a9"
+        ],
+        "bank": [
+          "BNK653E643D73AF54"
+        ],
+        "ledger": [
+          "LDGCA28A639846650"
+        ]
+      },
+      "expected_strategy": "DUPLICATE_UTR_REVIEW"
+    },
+    "9e29dc625e2d5dd7bdaef2a3bca3ead2": {
+      "case_type": "duplicate_utr",
+      "expected_outcome": "never_auto_match",
+      "source_ids": {
+        "razorpay": [
+          "setl_31f875dd65735ea3",
+          "setl_d998476f7af858c5"
+        ],
+        "bank": [
+          "BNK75C447DB502E5E"
+        ],
+        "ledger": [
+          "LDG49F202AA26FD5A"
+        ]
+      },
+      "expected_strategy": "DUPLICATE_UTR_REVIEW"
+    },
+    "9659499e31285bb0be509204cb5958ed": {
+      "case_type": "duplicate_utr",
+      "expected_outcome": "never_auto_match",
+      "source_ids": {
+        "razorpay": [
+          "setl_af9446855339560c",
+          "setl_a86f867e23355c34"
+        ],
+        "bank": [
+          "BNK2EB6585274E756"
+        ],
+        "ledger": [
+          "LDG8C7C32376EAB58"
+        ]
+      },
+      "expected_strategy": "DUPLICATE_UTR_REVIEW"
+    },
+    "c0a905d6340f5c02940013a90d71aa6b": {
+      "case_type": "duplicate_utr",
+      "expected_outcome": "never_auto_match",
+      "source_ids": {
+        "razorpay": [
+          "setl_507196420e1d5f7d",
+          "setl_37856bf4de4a5e50"
+        ],
+        "bank": [
+          "BNKA5593B08D0B651"
+        ],
+        "ledger": [
+          "LDG9071D7A254E65B"
+        ]
+      },
+      "expected_strategy": "DUPLICATE_UTR_REVIEW"
+    },
+    "845d12ee474d565bbdc3917898ed1ebf": {
+      "case_type": "duplicate_utr",
+      "expected_outcome": "never_auto_match",
+      "source_ids": {
+        "razorpay": [
+          "setl_66d9e8ea15475c03",
+          "setl_d6c493747f74501e"
+        ],
+        "bank": [
+          "BNK326DBC67B22050"
+        ],
+        "ledger": [
+          "LDGBF989D292B1856"
+        ]
+      },
+      "expected_strategy": "DUPLICATE_UTR_REVIEW"
+    },
+    "1205900c1d655c5f9be5e4bb30287c63": {
+      "case_type": "duplicate_utr",
+      "expected_outcome": "never_auto_match",
+      "source_ids": {
+        "razorpay": [
+          "setl_7b312d1b3a3e54c2",
+          "setl_044ac2aaff525a33"
+        ],
+        "bank": [
+          "BNK612739E9DF455E"
+        ],
+        "ledger": [
+          "LDGA34FA523A3D65D"
+        ]
+      },
+      "expected_strategy": "DUPLICATE_UTR_REVIEW"
+    },
+    "cbfedff2e2d15d4794476287e353d547": {
+      "case_type": "duplicate_utr",
+      "expected_outcome": "never_auto_match",
+      "source_ids": {
+        "razorpay": [
+          "setl_0c78f606638d5b0d",
+          "setl_bb154c2c115359f1"
+        ],
+        "bank": [
+          "BNK825F02906BD155"
+        ],
+        "ledger": [
+          "LDGEC134C95CF965F"
+        ]
+      },
+      "expected_strategy": "DUPLICATE_UTR_REVIEW"
+    },
+    "7c3bf2a520c050b5bfaddd2a3e7d8053": {
+      "case_type": "duplicate_utr",
+      "expected_outcome": "never_auto_match",
+      "source_ids": {
+        "razorpay": [
+          "setl_edfa66d40f405d20",
+          "setl_f909131576b45d6c"
+        ],
+        "bank": [
+          "BNKF234D8155CDD58"
+        ],
+        "ledger": [
+          "LDGCB882E415DA15D"
+        ]
+      },
+      "expected_strategy": "DUPLICATE_UTR_REVIEW"
+    },
+    "ee42191a91b05b588fdb2cba6100bd4b": {
+      "case_type": "duplicate_utr",
+      "expected_outcome": "never_auto_match",
+      "source_ids": {
+        "razorpay": [
+          "setl_d3b8b8cb6da552ab",
+          "setl_4a0c35c5aaf4500f"
+        ],
+        "bank": [
+          "BNK59882499BFD75E"
+        ],
+        "ledger": [
+          "LDG4E51603711E55C"
+        ]
+      },
+      "expected_strategy": "DUPLICATE_UTR_REVIEW"
+    },
+    "901257f83a035a1494493bcae43a6b04": {
+      "case_type": "duplicate_utr",
+      "expected_outcome": "never_auto_match",
+      "source_ids": {
+        "razorpay": [
+          "setl_75552b2a04585692",
+          "setl_2fdff1d3326e58dc"
+        ],
+        "bank": [
+          "BNK9C337009DF6456"
+        ],
+        "ledger": [
+          "LDG256919F121F156"
+        ]
+      },
+      "expected_strategy": "DUPLICATE_UTR_REVIEW"
+    },
+    "ff382cf044325a068bc50df538edc1fe": {
+      "case_type": "duplicate_utr",
+      "expected_outcome": "never_auto_match",
+      "source_ids": {
+        "razorpay": [
+          "setl_04d62e7df3dc58da",
+          "setl_7f3eb135ab03561c"
+        ],
+        "bank": [
+          "BNKEAF040C1267D55"
+        ],
+        "ledger": [
+          "LDG227A86B9B9AD59"
+        ]
+      },
+      "expected_strategy": "DUPLICATE_UTR_REVIEW"
+    },
+    "39a1eccd270f545abe1c49d5885d6a07": {
+      "case_type": "duplicate_utr",
+      "expected_outcome": "never_auto_match",
+      "source_ids": {
+        "razorpay": [
+          "setl_fcf59458613c5a46",
+          "setl_aa5724798ea85542"
+        ],
+        "bank": [
+          "BNK5161A9BF43955A"
+        ],
+        "ledger": [
+          "LDG49DDD8CF2F785A"
+        ]
+      },
+      "expected_strategy": "DUPLICATE_UTR_REVIEW"
+    },
+    "ffdf3848fa4a58f18d2c31c7cfccf427": {
+      "case_type": "duplicate_utr",
+      "expected_outcome": "never_auto_match",
+      "source_ids": {
+        "razorpay": [
+          "setl_384981eb71425ab0",
+          "setl_42a18a9f3e66554c"
+        ],
+        "bank": [
+          "BNK024F24E8F51056"
+        ],
+        "ledger": [
+          "LDG287461E70DC051"
+        ]
+      },
+      "expected_strategy": "DUPLICATE_UTR_REVIEW"
+    },
+    "c36bc1e514ca5660840a931de0e432de": {
+      "case_type": "duplicate_utr",
+      "expected_outcome": "never_auto_match",
+      "source_ids": {
+        "razorpay": [
+          "setl_d893472aea32518f",
+          "setl_56d9ed8a76f353d5"
+        ],
+        "bank": [
+          "BNK5DCF547EADD85A"
+        ],
+        "ledger": [
+          "LDG68EE9EA736035C"
+        ]
+      },
+      "expected_strategy": "DUPLICATE_UTR_REVIEW"
+    },
+    "d198b6be085158a6ac242bd240abbd34": {
+      "case_type": "duplicate_utr",
+      "expected_outcome": "never_auto_match",
+      "source_ids": {
+        "razorpay": [
+          "setl_f624f93573f75dd8",
+          "setl_f21b1477a6295327"
+        ],
+        "bank": [
+          "BNKDAD3275C75915A"
+        ],
+        "ledger": [
+          "LDG1DDC3431AD0C59"
+        ]
+      },
+      "expected_strategy": "DUPLICATE_UTR_REVIEW"
+    },
+    "4aecf5a505735cf684714134e4d394bc": {
+      "case_type": "duplicate_utr",
+      "expected_outcome": "never_auto_match",
+      "source_ids": {
+        "razorpay": [
+          "setl_0cc8953df35d5059",
+          "setl_14f18187eae25f4d"
+        ],
+        "bank": [
+          "BNK16A2AB7C54B251"
+        ],
+        "ledger": [
+          "LDG3E0E186AB5D253"
+        ]
+      },
+      "expected_strategy": "DUPLICATE_UTR_REVIEW"
+    },
+    "4b152438359c56a994be1bc8bfb64dd0": {
+      "case_type": "duplicate_utr",
+      "expected_outcome": "never_auto_match",
+      "source_ids": {
+        "razorpay": [
+          "setl_4a13e0df23015519",
+          "setl_0e141e4dbea2522c"
+        ],
+        "bank": [
+          "BNK642D74D716955B"
+        ],
+        "ledger": [
+          "LDG786EEA0A9E1A5C"
+        ]
+      },
+      "expected_strategy": "DUPLICATE_UTR_REVIEW"
+    },
+    "24a983c410b355129264d478daf5eb10": {
+      "case_type": "duplicate_utr",
+      "expected_outcome": "never_auto_match",
+      "source_ids": {
+        "razorpay": [
+          "setl_1451d274f7ec5f22",
+          "setl_a62690ea04725379"
+        ],
+        "bank": [
+          "BNK6A07D37ECC805F"
+        ],
+        "ledger": [
+          "LDGC7B19BDE866254"
+        ]
+      },
+      "expected_strategy": "DUPLICATE_UTR_REVIEW"
+    },
+    "a9b0e0bf0834523d8896e071591dd91e": {
+      "case_type": "duplicate_utr",
+      "expected_outcome": "never_auto_match",
+      "source_ids": {
+        "razorpay": [
+          "setl_43290f35d9f752b0",
+          "setl_2cda4037221b5dc3"
+        ],
+        "bank": [
+          "BNK32301A0FF22C59"
+        ],
+        "ledger": [
+          "LDGECB1E0D4F35456"
+        ]
+      },
+      "expected_strategy": "DUPLICATE_UTR_REVIEW"
+    },
+    "f9c6758df41d5a3290ab95ce56cd91c2": {
+      "case_type": "unrecognized_credit",
+      "expected_outcome": "unresolved_exception",
+      "source_ids": {
+        "razorpay": [],
+        "bank": [
+          "BNK161B23FFB6E45D"
+        ],
+        "ledger": []
+      }
+    },
+    "1e8bd9bbfeef52d7893ec1ad91968395": {
+      "case_type": "unrecognized_credit",
+      "expected_outcome": "unresolved_exception",
+      "source_ids": {
+        "razorpay": [],
+        "bank": [
+          "BNKCD566C04539A56"
+        ],
+        "ledger": []
+      }
+    },
+    "bf45437b277257809a7fcb231fc3f067": {
+      "case_type": "unrecognized_credit",
+      "expected_outcome": "unresolved_exception",
+      "source_ids": {
+        "razorpay": [],
+        "bank": [
+          "BNKF0A8D2FE4BCB56"
+        ],
+        "ledger": []
+      }
+    },
+    "518760a8859456c899d0b2eed92e6167": {
+      "case_type": "unrecognized_credit",
+      "expected_outcome": "unresolved_exception",
+      "source_ids": {
+        "razorpay": [],
+        "bank": [
+          "BNK867E316327E656"
+        ],
+        "ledger": []
+      }
+    },
+    "c61dd302e1d150488779ba8ba7dfb890": {
+      "case_type": "unrecognized_credit",
+      "expected_outcome": "unresolved_exception",
+      "source_ids": {
+        "razorpay": [],
+        "bank": [
+          "BNK1F8B404B215D53"
+        ],
+        "ledger": []
+      }
+    },
+    "40c02b68d5d35d6982c1f9b012cdda04": {
+      "case_type": "unrecognized_credit",
+      "expected_outcome": "unresolved_exception",
+      "source_ids": {
+        "razorpay": [],
+        "bank": [
+          "BNK8C42CE1814685A"
+        ],
+        "ledger": []
+      }
+    },
+    "db65adfc1b8d5a29827b7ff680392fa5": {
+      "case_type": "unrecognized_credit",
+      "expected_outcome": "unresolved_exception",
+      "source_ids": {
+        "razorpay": [],
+        "bank": [
+          "BNK8986ADB8680B55"
+        ],
+        "ledger": []
+      }
+    },
+    "de4ca9f14fa954e79a5274f9c6cca2d2": {
+      "case_type": "unrecognized_credit",
+      "expected_outcome": "unresolved_exception",
+      "source_ids": {
+        "razorpay": [],
+        "bank": [
+          "BNK26EE684CC9E852"
+        ],
+        "ledger": []
+      }
+    },
+    "974ae32651c55d14856bee3d6e0dd90f": {
+      "case_type": "unrecognized_credit",
+      "expected_outcome": "unresolved_exception",
+      "source_ids": {
+        "razorpay": [],
+        "bank": [
+          "BNK022BE61FDE1255"
+        ],
+        "ledger": []
+      }
+    },
+    "0a2b3037aafb54738412f932d4627d4f": {
+      "case_type": "unrecognized_credit",
+      "expected_outcome": "unresolved_exception",
+      "source_ids": {
+        "razorpay": [],
+        "bank": [
+          "BNK13DE7CA6A0DD55"
+        ],
+        "ledger": []
+      }
+    },
+    "b19b54f7c37650c48cbf11ed920a8294": {
+      "case_type": "unrecognized_credit",
+      "expected_outcome": "unresolved_exception",
+      "source_ids": {
+        "razorpay": [],
+        "bank": [
+          "BNKC1F82469162E54"
+        ],
+        "ledger": []
+      }
+    },
+    "e5e0d6517d0f5334af2c7e85a02c4a37": {
+      "case_type": "unrecognized_credit",
+      "expected_outcome": "unresolved_exception",
+      "source_ids": {
+        "razorpay": [],
+        "bank": [
+          "BNKE84F070FE70459"
+        ],
+        "ledger": []
+      }
+    },
+    "077c40fbf58f53fb8e48d6747dac2656": {
+      "case_type": "unrecognized_credit",
+      "expected_outcome": "unresolved_exception",
+      "source_ids": {
+        "razorpay": [],
+        "bank": [
+          "BNK199F98F3EDDF5E"
+        ],
+        "ledger": []
+      }
+    },
+    "71c50121faa7538887b00d452f18b7bb": {
+      "case_type": "unrecognized_credit",
+      "expected_outcome": "unresolved_exception",
+      "source_ids": {
+        "razorpay": [],
+        "bank": [
+          "BNK7FB9226F4C7354"
+        ],
+        "ledger": []
+      }
+    },
+    "3f06ceaf6d415f65be64e71f05cdb14f": {
+      "case_type": "unrecognized_credit",
+      "expected_outcome": "unresolved_exception",
+      "source_ids": {
+        "razorpay": [],
+        "bank": [
+          "BNK38E1147C83305B"
+        ],
+        "ledger": []
+      }
+    },
+    "33191b6695035126800ad46892f2c208": {
+      "case_type": "unrecognized_credit",
+      "expected_outcome": "unresolved_exception",
+      "source_ids": {
+        "razorpay": [],
+        "bank": [
+          "BNK49D6237561D851"
+        ],
+        "ledger": []
+      }
+    },
+    "4f4d199bed6b55acaf0e0a9a476d3b16": {
+      "case_type": "unrecognized_credit",
+      "expected_outcome": "unresolved_exception",
+      "source_ids": {
+        "razorpay": [],
+        "bank": [
+          "BNK387D47E9ADB65E"
+        ],
+        "ledger": []
+      }
+    },
+    "0fc685ea10fb576b841f91495b11cb90": {
+      "case_type": "unrecognized_credit",
+      "expected_outcome": "unresolved_exception",
+      "source_ids": {
+        "razorpay": [],
+        "bank": [
+          "BNK3D12156FF11551"
+        ],
+        "ledger": []
+      }
+    },
+    "51a9810490bd5c7ab04780f825961445": {
+      "case_type": "unrecognized_credit",
+      "expected_outcome": "unresolved_exception",
+      "source_ids": {
+        "razorpay": [],
+        "bank": [
+          "BNKED6F799E0DEA5A"
+        ],
+        "ledger": []
+      }
+    },
+    "fc68be8498fe5484a50ac0c00f0a9b2c": {
+      "case_type": "unrecognized_credit",
+      "expected_outcome": "unresolved_exception",
+      "source_ids": {
+        "razorpay": [],
+        "bank": [
+          "BNK23693F43940358"
+        ],
+        "ledger": []
+      }
+    },
+    "6501aab3bc725a95ac8a61ea05dc6039": {
+      "case_type": "unrecognized_credit",
+      "expected_outcome": "unresolved_exception",
+      "source_ids": {
+        "razorpay": [],
+        "bank": [
+          "BNK3058B480788459"
+        ],
+        "ledger": []
+      }
+    },
+    "f5747ffce83952aa82e74e41c1b44269": {
+      "case_type": "unrecognized_credit",
+      "expected_outcome": "unresolved_exception",
+      "source_ids": {
+        "razorpay": [],
+        "bank": [
+          "BNK07D8D5128C1D5B"
+        ],
+        "ledger": []
+      }
+    },
+    "c1b5383ffa215cf99f137a0b1777563a": {
+      "case_type": "unrecognized_credit",
+      "expected_outcome": "unresolved_exception",
+      "source_ids": {
+        "razorpay": [],
+        "bank": [
+          "BNKDB1B1E5F1D8A5D"
+        ],
+        "ledger": []
+      }
+    },
+    "022a91ff4cc45610b096f24bbc52c73f": {
+      "case_type": "unrecognized_credit",
+      "expected_outcome": "unresolved_exception",
+      "source_ids": {
+        "razorpay": [],
+        "bank": [
+          "BNK7F4A19CB89AC5A"
+        ],
+        "ledger": []
+      }
+    },
+    "21446dc0988754028b2bb1de4f5eaf1a": {
+      "case_type": "unrecognized_credit",
+      "expected_outcome": "unresolved_exception",
+      "source_ids": {
+        "razorpay": [],
+        "bank": [
+          "BNKF6856B60715159"
+        ],
+        "ledger": []
+      }
+    }
+  }
+}

@@ -1,0 +1,22 @@
+{
+  "fixture_version": "synthetic-v1",
+  "seed": 42,
+  "synthetic": true,
+  "counts": {
+    "perfect_match": 60,
+    "fee_deduction": 15,
+    "partial_refund": 10,
+    "duplicate_utr": 5,
+    "unrecognized_credit": 10,
+    "total_cases": 100,
+    "razorpay_rows": 95,
+    "bank_rows": 100,
+    "ledger_rows": 90
+  },
+  "sha256": {
+    "razorpay_settlements.json": "d7c562b070a8b43176db6a120e39284d7840806b4bf30083d3b3c11a64291771",
+    "bank_statement.csv": "3e875c879239ed8ee6b01ec89f4d64300caa6175ff865841d39631f9e42d7a42",
+    "ledger.csv": "953ea82d40d2e72c3b5e8cf26b7079cf0fc214f8edddd031e603aae07e520381",
+    "ground_truth.json": "14ced5c87014cb87d47352b553d7e7e21cd4cbc545e19449e249aaff981168b5"
+  }
+}
