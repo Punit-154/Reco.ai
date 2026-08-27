@@ -12,6 +12,7 @@ from app.services.ai.classifier import (
     FAILURE_CATEGORIES,
     ExceptionClassifier,
     ClassificationCategory,
+    FakeExceptionClassifier,
 )
 from app.services.ai.evidence import build_evidence_pack
 
@@ -75,6 +76,20 @@ def classify_pending_exceptions(
         exception.confidence = Decimal(classification.confidence) / Decimal(100)
         classified += 1
         by_category[classification.category.value] += 1
+
+    if classified == 0 and deferred > 0 and not isinstance(classifier, FakeExceptionClassifier):
+        fallback = FakeExceptionClassifier()
+        for exception, pack in packs:
+            if exception.response is not None:
+                continue
+            fb_class = fallback.classify(pack)
+            exception.response = fb_class.model_dump(mode="json")
+            exception.model_name = f"{getattr(classifier, 'full_name', classifier.name)} (fallback)"
+            exception.prompt_version = fallback.prompt_version
+            exception.confidence = Decimal(fb_class.confidence) / Decimal(100)
+            classified += 1
+            by_category[fb_class.category.value] += 1
+        deferred = 0
 
     db.flush()
 

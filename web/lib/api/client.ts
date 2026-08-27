@@ -7,6 +7,7 @@ import type {
   RunListItem,
   RunMetricsResponse,
   ReconciliationRunResponse,
+  SourceStatus,
 } from "./types";
 
 const API_BASE =
@@ -106,4 +107,8 @@ export async function listAuditLogs(params?: {
   if (params?.entity_id) search.set("entity_id", params.entity_id);
   const qs = search.toString();
   return request<AuditEvent[]>(`/api/exceptions/audit-logs${qs ? `?${qs}` : ""}`);
+}
+
+export async function listSources(): Promise<SourceStatus[]> {
+  return request<SourceStatus[]>("/api/imports/sources");
 }

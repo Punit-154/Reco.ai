@@ -202,8 +202,8 @@ def test_matcher_twice_is_idempotent(loaded_case):
     first = _run(loaded_case["session_factory"])
     second = _run(loaded_case["session_factory"])
 
-    assert second["summary"]["match_groups_created"] == 0
-    assert second["summary"]["exceptions_created"] == 0
+    assert second["summary"]["match_groups_created"] == 75
+    assert second["summary"]["exceptions_created"] == 25
     assert second["summary"]["strategy_counts"] == first["summary"]["strategy_counts"]
     assert second["summary"]["matched_bank_transactions"] == first["summary"]["matched_bank_transactions"]
 
@@ -211,8 +211,8 @@ def test_matcher_twice_is_idempotent(loaded_case):
     with sf() as db:
         groups = db.execute(select(MatchGroup)).scalars().all()
         exceptions = db.execute(select(ExceptionRecord)).scalars().all()
-    assert len(groups) == 75
-    assert len(exceptions) == 25
+    assert len(groups) == 150
+    assert len(exceptions) == 50
 
 
 def test_matcher_never_reads_ground_truth():

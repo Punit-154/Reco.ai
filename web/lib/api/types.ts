@@ -122,3 +122,9 @@ export interface RunMetricsResponse {
   summary: RunSummaryData;
   evaluation: { evaluation_run_id: string; metrics: EvaluationMetrics } | null;
 }
+
+export interface SourceStatus {
+  kind: string;
+  name: string;
+  txn_count: number;
+}

@@ -6,8 +6,8 @@ classifies residue (Fake classifier, or Groq when GROQ_API_KEY + GROQ_MODEL are
 set), prints evaluation metrics and dashboard URLs.
 
 Usage:
-    python scripts/run_demo.py [--seed 42] [--skip-docker] [--no-open]
-        [--backend-port 8000] [--frontend-port 3000]
+    python scripts/run_demo.py [--seed 42] [--preset clean|balanced|messy|stress]
+        [--skip-docker] [--no-open] [--backend-port 8000] [--frontend-port 3000]
 """
 
 from __future__ import annotations
@@ -22,6 +22,7 @@ import webbrowser
 from pathlib import Path
 
 import httpx
+from dotenv import load_dotenv
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
 BACKEND_DIR = REPO_ROOT / "backend"
@@ -29,6 +30,9 @@ WEB_DIR = REPO_ROOT / "web"
 FIXTURES_DIR = REPO_ROOT / "fixtures" / "synthetic"
 
 sys.path.insert(0, str(BACKEND_DIR))
+
+# Load .env file so Groq keys are visible to os.environ
+load_dotenv(REPO_ROOT / ".env")
 
 
 def wait_for(url: str, label: str, timeout_s: int = 90) -> None:
@@ -55,6 +59,12 @@ def run_step(cmd: list[str], cwd: Path | None = None, check: bool = True) -> int
 def main() -> int:
     parser = argparse.ArgumentParser(description="Run the Reco.ai end-to-end demo")
     parser.add_argument("--seed", type=int, default=42)
+    parser.add_argument(
+        "--preset",
+        choices=["clean", "balanced", "messy", "stress"],
+        default=None,
+        help="Use a named preset (overrides --seed with preset-specific case_counts)",
+    )
     parser.add_argument("--skip-docker", action="store_true", help="Postgres already running")
     parser.add_argument("--no-open", action="store_true", help="do not open the browser")
     parser.add_argument("--backend-port", type=int, default=8000)
@@ -83,14 +93,27 @@ def main() -> int:
     else:
         raise RuntimeError("database never became ready; is Docker running?")
 
-    print(f"[3/8] generating fixtures (seed={args.seed}, deterministic)")
-    from app.services.evaluation.synthetic_generator import (
-        SyntheticDataGenerator,
-        write_fixture_files,
-    )
+    if args.preset:
+        preset_dir = REPO_ROOT / "fixtures" / "test_sets" / args.preset
+        if not preset_dir.exists():
+            print(f"  generating preset fixtures first ({args.preset})")
+            run_step(
+                [sys.executable, "scripts/generate_test_sets.py", "--presets", args.preset],
+                cwd=REPO_ROOT,
+            )
+        print(f"[3/8] copying {args.preset} preset fixtures")
+        for f in preset_dir.iterdir():
+            if f.is_file():
+                shutil.copy2(f, FIXTURES_DIR / f.name)
+    else:
+        print(f"[3/8] generating fixtures (seed={args.seed}, deterministic)")
+        from app.services.evaluation.synthetic_generator import (
+            SyntheticDataGenerator,
+            write_fixture_files,
+        )
 
-    generated = SyntheticDataGenerator(args.seed).generate()
-    write_fixture_files(generated, FIXTURES_DIR)
+        generated = SyntheticDataGenerator(args.seed).generate()
+        write_fixture_files(generated, FIXTURES_DIR)
 
     print(f"[4/8] starting backend on :{args.backend_port}")
     backend_proc = subprocess.Popen(
@@ -143,7 +166,12 @@ def main() -> int:
             json={"use_ai": use_ai, "limit": 200},
             timeout=180,
         ).json()
-        print(f"  classified={classification['classified']} by_category={classification['by_category']}")
+        print(
+            f"  classified={classification['classified']} "
+            f"pending_found={classification['pending_found']} "
+            f"deferred_retry={classification['deferred_retry']} "
+            f"by_category={classification['by_category']}"
+        )
 
         metrics = httpx.get(
             f"{base}/api/reconciliation-runs/{run['run_id']}/metrics", timeout=120

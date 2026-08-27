@@ -9,18 +9,18 @@ from pydantic import BaseModel, ConfigDict, Field, ValidationError
 PROMPT_VERSION_FAKE = "v0-fake"
 PROMPT_VERSION_GROQ = "v1-groq"
 
-ALLOWED_CATEGORIES = (
+LLM_CATEGORIES = (
     "FEE_DELTA",
     "REFUND_LAG",
     "FX_ROUNDING",
     "DUPLICATE_UTR",
     "UNRECOGNIZED_CREDIT",
     "AMBIGUOUS_MATCH",
-    "MODEL_UNAVAILABLE",
-    "INVALID_MODEL_OUTPUT",
 )
 
 FAILURE_CATEGORIES = {"MODEL_UNAVAILABLE", "INVALID_MODEL_OUTPUT"}
+
+ALLOWED_CATEGORIES = LLM_CATEGORIES + tuple(FAILURE_CATEGORIES)
 
 
 class ClassificationCategory(str, Enum):
@@ -170,7 +170,7 @@ class GroqExceptionClassifier:
         self.model = model
         if transport is not None:
             self._transport = transport
-        else:
+        elif "_transport" not in type(self).__dict__:
             self._transport = self._http_transport
 
     @property
@@ -179,7 +179,7 @@ class GroqExceptionClassifier:
 
     def render_prompt(self, evidence_pack: dict) -> tuple[str, str]:
         user_prompt = PROMPT_TEMPLATE.replace(
-            "$allowed_categories", ", ".join(ALLOWED_CATEGORIES)
+            "$allowed_categories", ", ".join(LLM_CATEGORIES)
         ).replace("$exception_facts", json.dumps(evidence_pack, default=str))
         if "$allowed_categories" in user_prompt or "$exception_facts" in user_prompt:
             raise ValueError("prompt template has unsubstituted placeholders")
@@ -294,6 +294,7 @@ def get_classifier(settings: Any, use_ai: bool = False) -> ExceptionClassifier:
 
 
 __all__ = [
+    "LLM_CATEGORIES",
     "ALLOWED_CATEGORIES",
     "ClassificationCategory",
     "ExceptionClassifier",

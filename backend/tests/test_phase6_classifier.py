@@ -8,6 +8,7 @@ from sqlalchemy import select
 from app.models import ExceptionRecord, MatchGroup
 from app.services.ai.classifier import (
     ALLOWED_CATEGORIES,
+    LLM_CATEGORIES,
     ClassificationCategory,
     ExceptionClassification,
     FakeExceptionClassifier,
@@ -247,7 +248,7 @@ def test_prompt_contains_no_placeholders_or_ground_truth():
     for token in non_label_tokens:
         assert token not in lowered, f"prompt leaks label token: {token}"
 
-    for category in ALLOWED_CATEGORIES:
+    for category in LLM_CATEGORIES:
         assert category in user_prompt
     assert "100000" in user_prompt
 

@@ -484,8 +484,10 @@ def _summarize(db: Session, org_id: uuid.UUID, run_id: uuid.UUID) -> dict:
     matched_bank_ids = set(
         db.execute(
             select(MatchMember.transaction_id)
+            .join(MatchGroup, MatchGroup.id == MatchMember.match_group_id)
             .join(Transaction, Transaction.id == MatchMember.transaction_id)
             .where(
+                MatchGroup.batch_id == run_id,
                 Transaction.org_id == org_id,
                 Transaction.transaction_kind == "bank_credit",
             )
@@ -498,13 +500,15 @@ def _summarize(db: Session, org_id: uuid.UUID, run_id: uuid.UUID) -> dict:
     rate = round(matched / total, 4) if total else 0.0
 
     strategy_rows = db.execute(
-        select(MatchGroup.strategy).where(MatchGroup.org_id == org_id)
+        select(MatchGroup.strategy).where(MatchGroup.batch_id == run_id)
     ).scalars().all()
     strategy_counts: dict[str, int] = {}
     for strategy in strategy_rows:
         strategy_counts[strategy] = strategy_counts.get(strategy, 0) + 1
 
-    taxonomy_rows = db.execute(select(ExceptionRecord.taxonomy)).scalars().all()
+    taxonomy_rows = db.execute(
+        select(ExceptionRecord.taxonomy).where(ExceptionRecord.batch_id == run_id)
+    ).scalars().all()
     exceptions_by_category: dict[str, int] = {}
     for taxonomy in taxonomy_rows:
         key = taxonomy or "UNSPECIFIED"
@@ -515,11 +519,7 @@ def _summarize(db: Session, org_id: uuid.UUID, run_id: uuid.UUID) -> dict:
             select(ExceptionRecord.id).where(ExceptionRecord.batch_id == run_id)
         ).scalars().all()
     )
-    groups_created = len(
-        db.execute(
-            select(MatchGroup.id).where(MatchGroup.batch_id == run_id)
-        ).scalars().all()
-    )
+    groups_created = len(strategy_rows)
 
     return {
         "total_bank_transactions": total,
@@ -529,7 +529,7 @@ def _summarize(db: Session, org_id: uuid.UUID, run_id: uuid.UUID) -> dict:
         "exceptions_created": exceptions_created,
         "strategy_counts": strategy_counts,
         "match_groups_created": groups_created,
-        "match_groups_total": len(strategy_rows),
+        "match_groups_total": groups_created,
         "exceptions_total": sum(exceptions_by_category.values()),
         "exceptions_by_category": exceptions_by_category,
     }
@@ -543,8 +543,8 @@ def start_reconciliation_run(db: Session, org_id: uuid.UUID | None = None) -> di
     db.flush()
 
     df = _load_frame(db, org)
-    already_matched = _existing_member_txn_ids(db)
-    already_exceptioned = _existing_exception_txn_ids(db)
+    already_matched: set = set()
+    already_exceptioned: set = set()
 
     state = _RunState()
     all_settlements = df[df["kind"] == "settlement"]

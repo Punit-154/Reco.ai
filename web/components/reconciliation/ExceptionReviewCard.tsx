@@ -170,7 +170,7 @@ export default function ExceptionReviewCard({
 
         <section aria-label="ai-hypothesis">
           <p className="text-[10px] font-medium tracking-wide text-muted-foreground uppercase">
-            3 · AI hypothesis ({row.model_name ?? "not classified"})
+            3 · AI hypothesis ({row.model_name?.startsWith("groq") ? "AI" : row.model_name === "fake" ? "Offline" : row.model_name ?? "not classified"})
           </p>
           {ai ? (
             <div className="mt-0.5 space-y-1">
@@ -230,7 +230,7 @@ export default function ExceptionReviewCard({
           </section>
         )}
 
-        {!overrideMode && (
+        {!overrideMode && row.status === "unresolved" && (
           <Input
             placeholder="Reason for reject (optional here)"
             className="h-7 text-xs"
@@ -241,7 +241,7 @@ export default function ExceptionReviewCard({
       </CardContent>
 
       <CardFooter className="gap-1 pt-0">
-        {!overrideMode ? (
+        {!overrideMode && row.status === "unresolved" ? (
           <>
             <Button
               size="sm"

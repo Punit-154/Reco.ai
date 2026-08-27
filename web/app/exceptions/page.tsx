@@ -49,7 +49,7 @@ export default function ExceptionsPage() {
   async function handleClassify() {
     setBusy(true);
     try {
-      const result = await classifyPending(false);
+      const result = await classifyPending(true);
       toast.success(`Classified ${result.classified} exceptions (${result.classifier})`);
       refresh();
     } catch (e) {
