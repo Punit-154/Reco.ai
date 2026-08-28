@@ -1,9 +1,10 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { ClipboardCheck } from "lucide-react";
+import { ClipboardCheck, Download } from "lucide-react";
 
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
@@ -50,6 +51,8 @@ const METRIC_LABELS: { key: keyof Omit<import("@/lib/api/types").EvaluationMetri
     description: "mean evidence-support across evaluated explanations",
   },
 ];
+
+const EXPORT_URL = `${process.env.NEXT_PUBLIC_API_BASE_URL ?? "http://localhost:8000"}/api/exceptions/export/csv`;
 
 export default function EvaluationPanel({ runId }: { runId: string }) {
   const [metrics, setMetrics] = useState<RunMetricsResponse | null>(null);
@@ -116,6 +119,11 @@ export default function EvaluationPanel({ runId }: { runId: string }) {
             <Badge variant="secondary" className="mt-2 text-[10px]">
               Ground truth isolated from matcher and prompts
             </Badge>
+            <a href={EXPORT_URL} download="exception_list.csv" className="mt-2 inline-block">
+              <Button size="sm" variant="outline" className="h-7 text-xs gap-1">
+                <Download className="size-3" /> Download Exception List
+              </Button>
+            </a>
           </>
         )}
       </CardContent>

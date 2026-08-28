@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { History } from "lucide-react";
 
 import { Badge } from "@/components/ui/badge";
@@ -9,13 +9,24 @@ import { listAuditLogs } from "@/lib/api/client";
 import type { AuditEvent } from "@/lib/api/types";
 import { formatDateTime } from "@/lib/format";
 
-export default function AuditTimeline({ exceptionId }: { exceptionId: string }) {
+export default function AuditTimeline({
+  exceptionId,
+  statusFilter = "all",
+  version = 0,
+}: {
+  exceptionId?: string;
+  statusFilter?: string;
+  version?: number;
+}) {
   const [events, setEvents] = useState<AuditEvent[]>([]);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     let active = true;
-    listAuditLogs({ entity_type: "exception", entity_id: exceptionId })
+    listAuditLogs({
+      entity_type: "exception",
+      ...(exceptionId ? { entity_id: exceptionId } : {}),
+    })
       .then((logs) => {
         if (active) setEvents(logs);
       })
@@ -25,7 +36,12 @@ export default function AuditTimeline({ exceptionId }: { exceptionId: string }) 
     return () => {
       active = false;
     };
-  }, [exceptionId]);
+  }, [exceptionId, version]);
+
+  const filtered = useMemo(() => {
+    if (statusFilter === "all") return events;
+    return events.filter((e) => e.new_state?.status === statusFilter);
+  }, [events, statusFilter]);
 
   return (
     <Card>
@@ -36,11 +52,11 @@ export default function AuditTimeline({ exceptionId }: { exceptionId: string }) 
       </CardHeader>
       <CardContent>
         {error && <p className="text-xs text-red-600">{error}</p>}
-        {events.length === 0 && !error && (
+        {filtered.length === 0 && !error && (
           <p className="text-xs text-muted-foreground">No human actions recorded yet.</p>
         )}
         <ol className="space-y-2">
-          {events.map((event) => (
+          {filtered.map((event) => (
             <li key={event.id} className="border-l-2 pl-3 text-xs">
               <div className="flex items-center gap-2">
                 <Badge variant="outline" className="font-mono text-[10px]">

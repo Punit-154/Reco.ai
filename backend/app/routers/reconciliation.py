@@ -87,6 +87,7 @@ def list_run_matches(run_id: str, db: Session = Depends(get_db)):
             "actual_amount_paise": g.actual_amount_paise,
             "delta_paise": g.delta_paise,
             "members": members_by_group.get(g.id, []),
+            "rule_trace": g.rule_trace,
         }
         for g in groups
     ]

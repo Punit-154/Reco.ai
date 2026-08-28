@@ -15,8 +15,9 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { classifyPending, listExceptions } from "@/lib/api/client";
-import type { ExceptionRow } from "@/lib/api/types";
+import { classifyPending, listExceptions, listRuns, getRunMetrics } from "@/lib/api/client";
+import type { ExceptionRow, EvaluationMetrics } from "@/lib/api/types";
+import { formatPct } from "@/lib/format";
 
 const STATUS_FILTERS = ["all", "unresolved", "approved", "rejected", "overridden"] as const;
 
@@ -26,6 +27,10 @@ export default function ExceptionsPage() {
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [evalMetrics, setEvalMetrics] = useState<EvaluationMetrics | null>(null);
+  const [prevCount, setPrevCount] = useState<number | null>(null);
+  const [newAlert, setNewAlert] = useState<string | null>(null);
+  const [auditVersion, setAuditVersion] = useState(0);
 
   const refresh = useCallback(() => {
     listExceptions()
@@ -33,7 +38,30 @@ export default function ExceptionsPage() {
       .catch((e) => setError(String(e.message ?? e)));
   }, []);
 
-  useEffect(refresh, [refresh]);
+  useEffect(() => {
+    refresh();
+    const id = setInterval(refresh, 8000);
+    return () => clearInterval(id);
+  }, [refresh]);
+
+  useEffect(() => {
+    listRuns()
+      .then((runs) => runs[0] ? getRunMetrics(runs[0].run_id) : null)
+      .then((res) => { if (res?.evaluation?.metrics) setEvalMetrics(res.evaluation.metrics); })
+      .catch(() => {});
+  }, []);
+
+  useEffect(() => {
+    if (prevCount === null) { setPrevCount(rows.length); return; }
+    if (rows.length > prevCount) {
+      const added = rows.length - prevCount;
+      const newUnresolved = rows.filter((r) => r.status === "unresolved").length;
+      const msg = `⚠️ ${added} new exception${added > 1 ? "s" : ""} detected — ${newUnresolved} unresolved`;
+      setNewAlert(msg);
+      toast.warning(msg, { duration: 6000 });
+    }
+    setPrevCount(rows.length);
+  }, [rows]);
 
   const filtered = useMemo(
     () =>
@@ -61,10 +89,61 @@ export default function ExceptionsPage() {
 
   function handleDecided() {
     refresh();
+    setAuditVersion((v) => v + 1);
   }
 
   return (
     <div className="space-y-4">
+      {newAlert && (
+        <div
+          role="alert"
+          className="flex items-center justify-between rounded-md border border-amber-300 bg-amber-50 px-3 py-2 text-xs text-amber-900"
+        >
+          <span className="font-medium">{newAlert}</span>
+          <button
+            className="ml-4 text-amber-600 hover:text-amber-900 font-bold"
+            onClick={() => setNewAlert(null)}
+            aria-label="Dismiss alert"
+          >
+            ✕
+          </button>
+        </div>
+      )}
+
+      {evalMetrics && (
+        <div className="rounded-lg border border-blue-200 bg-blue-50/60 px-4 py-3">
+          <div className="flex flex-wrap items-center gap-2 mb-2">
+            <span className="text-sm font-semibold text-blue-900">
+              📊 Evaluation vs Ground Truth
+            </span>
+            <span className="font-mono text-[10px] bg-blue-100 text-blue-700 px-1.5 py-0.5 rounded">
+              {evalMetrics.total_cases} cases · seed {String(evalMetrics.seed ?? "fixed")}
+            </span>
+            <span className="ml-auto text-[10px] italic text-blue-500">
+              Ground truth isolated from matcher and prompts
+            </span>
+          </div>
+          <div className="grid grid-cols-2 gap-x-6 gap-y-2 md:grid-cols-5">
+            {[
+              { label: "Det. Match Score", value: evalMetrics.deterministic_match_rate },
+              { label: "Det. Coverage", value: evalMetrics.deterministic_coverage },
+              { label: "Exception Recall", value: evalMetrics.exception_recall },
+              { label: "AI Accuracy", value: evalMetrics.ai_classification_accuracy },
+              { label: "LLM Faithfulness", value: evalMetrics.llm_faithfulness_score },
+            ].map((m) => (
+              <div key={m.label} className="flex flex-col">
+                <span className="text-[10px] font-medium uppercase tracking-wide text-blue-700">
+                  {m.label}
+                </span>
+                <span className="font-mono text-xl font-bold text-blue-900 tabular-nums leading-tight">
+                  {formatPct(m.value)}
+                </span>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
       <div className="flex items-center justify-between">
         <h1 className="text-sm font-semibold">Exception review flow</h1>
         <div className="flex items-center gap-2">
@@ -132,7 +211,7 @@ export default function ExceptionsPage() {
 
           <div className="grid gap-4 md:grid-cols-2">
             <ExceptionReviewCard row={selected} onDecided={handleDecided} />
-            <AuditTimeline exceptionId={selected.id} />
+            <AuditTimeline statusFilter={statusFilter} version={auditVersion} />
           </div>
         </div>
       )}

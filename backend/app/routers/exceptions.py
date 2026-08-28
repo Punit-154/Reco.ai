@@ -1,6 +1,9 @@
+import csv
+import io
 import uuid
 
 from fastapi import APIRouter, Depends, HTTPException
+from fastapi.responses import StreamingResponse
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
@@ -98,6 +101,54 @@ def list_audit_logs(
         }
         for log in logs
     ]
+
+
+CSV_COLUMNS = [
+    "id", "status", "taxonomy", "confidence", "model_name",
+    "bank_external_id", "bank_amount_paise", "bank_currency", "bank_effective_date",
+    "normalized_utr", "reason_code", "ai_category", "ai_confidence", "ai_explanation",
+    "faithfulness_score", "retry_count",
+]
+
+
+@router.get("/export/csv")
+def export_exceptions_csv(db: Session = Depends(get_db)):
+    rows = db.execute(
+        select(ExceptionRecord).order_by(ExceptionRecord.created_at)
+    ).scalars().all()
+
+    buf = io.StringIO()
+    writer = csv.DictWriter(buf, fieldnames=CSV_COLUMNS)
+    writer.writeheader()
+
+    for row in rows:
+        evidence = row.evidence or {}
+        response = row.response or {}
+        writer.writerow({
+            "id": str(row.id),
+            "status": row.status,
+            "taxonomy": row.taxonomy,
+            "confidence": float(row.confidence) if row.confidence is not None else "",
+            "model_name": row.model_name or "",
+            "bank_external_id": evidence.get("bank_external_id", ""),
+            "bank_amount_paise": evidence.get("bank_amount_paise", ""),
+            "bank_currency": evidence.get("bank_currency", ""),
+            "bank_effective_date": evidence.get("bank_effective_date", ""),
+            "normalized_utr": evidence.get("normalized_utr", ""),
+            "reason_code": evidence.get("reason_code", ""),
+            "ai_category": response.get("category", ""),
+            "ai_confidence": response.get("confidence", ""),
+            "ai_explanation": response.get("explanation", ""),
+            "faithfulness_score": float(row.faithfulness_score) if row.faithfulness_score is not None else "",
+            "retry_count": row.retry_count,
+        })
+
+    buf.seek(0)
+    return StreamingResponse(
+        iter([buf.getvalue()]),
+        media_type="text/csv",
+        headers={"Content-Disposition": "attachment; filename=exception_list.csv"},
+    )
 
 
 @router.get("/{exception_id}")

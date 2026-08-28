@@ -159,7 +159,7 @@ export default function ExceptionReviewCard({
 
         <section aria-label="deterministic-evidence">
           <p className="text-[10px] font-medium tracking-wide text-muted-foreground uppercase">
-            2 · Deterministic evidence
+            2a · Deterministic evidence
           </p>
           <p className="mt-0.5 text-[11px]">
             {row.evidence?.explanation ?? "—"}
@@ -168,9 +168,70 @@ export default function ExceptionReviewCard({
 
         <Separator />
 
+        <section aria-label="rule-trace">
+          <p className="text-[10px] font-medium tracking-wide text-muted-foreground uppercase">
+            2b · Why not auto-matched?
+          </p>
+          <ol className="mt-1 space-y-1">
+            <li className="flex items-start gap-1.5 font-mono text-[10px]">
+              <span className="mt-0.5 shrink-0 text-red-500">✗</span>
+              <span>
+                <span className="font-semibold">Step 1: EXACT_UTR_AMOUNT</span>
+                {" — "}
+                <span className="text-muted-foreground">
+                  {facts.normalizedUtr
+                    ? `UTR ${facts.normalizedUtr} matched ${row.evidence?.related_settlement_transaction_ids?.length ?? 0} settlement(s) — not uniquely matchable`
+                    : "No UTR on this bank credit"}
+                </span>
+              </span>
+            </li>
+            <li className="flex items-start gap-1.5 font-mono text-[10px]">
+              <span className="mt-0.5 shrink-0 text-red-500">✗</span>
+              <span>
+                <span className="font-semibold">Step 2: AMOUNT_DATE_WINDOW</span>
+                {" — "}
+                <span className="text-muted-foreground">
+                  {facts.candidateDeltas && facts.candidateDeltas.length > 0
+                    ? `${facts.candidateDeltas.length} amount candidate(s) within ±2 days — ambiguous`
+                    : "No unique amount match within ±2 days"}
+                </span>
+              </span>
+            </li>
+            <li className="flex items-start gap-1.5 font-mono text-[10px]">
+              <span className="mt-0.5 shrink-0 text-red-500">✗</span>
+              <span>
+                <span className="font-semibold">Step 3: LEDGER_NET_EXACT</span>
+                {" — "}
+                <span className="text-muted-foreground">
+                  {row.evidence?.reason_code === "NO_CANDIDATE"
+                    ? "No ledger entry with matching gross/fee/tax equation"
+                    : "Ledger equation ambiguous — multiple candidates or missing ledger"}
+                </span>
+              </span>
+            </li>
+          </ol>
+          {!!facts.candidateDeltas?.length && (
+            <p className="mt-1 font-mono text-[10px] text-muted-foreground">
+              Delta vs candidates:{" "}
+              {facts.candidateDeltas.map((d) =>
+                `${d > 0 ? "+" : ""}${(d / 100).toFixed(2)} ₹`
+              ).join(", ")}
+            </p>
+          )}
+        </section>
+
+        <Separator />
+
         <section aria-label="ai-hypothesis">
           <p className="text-[10px] font-medium tracking-wide text-muted-foreground uppercase">
             3 · AI hypothesis ({row.model_name?.startsWith("groq") ? "AI" : row.model_name === "fake" ? "Offline" : row.model_name ?? "not classified"})
+            <Badge
+              variant="outline"
+              className="ml-1.5 align-middle text-[9px] text-green-700 border-green-300"
+              title="Output strictly validated via Pydantic. Autonomous ledger-posting disabled."
+            >
+              🛡 guarded
+            </Badge>
           </p>
           {ai ? (
             <div className="mt-0.5 space-y-1">

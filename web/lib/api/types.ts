@@ -50,6 +50,7 @@ export interface MatchGroupRow {
   actual_amount_paise: number | null;
   delta_paise: number | null;
   members: MatchMemberRow[];
+  rule_trace: Record<string, unknown> | null;
 }
 
 export interface AiHypothesis {
