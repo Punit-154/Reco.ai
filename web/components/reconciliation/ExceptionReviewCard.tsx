@@ -107,10 +107,10 @@ export default function ExceptionReviewCard({
   const ai = row.response;
 
   return (
-    <Card className="gap-3">
-      <CardHeader className="pb-1">
+    <Card className="gap-4 shadow-card">
+      <CardHeader className="pb-2">
         <div className="flex items-center justify-between gap-2">
-          <CardTitle className="font-mono text-xs">{row.id.slice(0, 8)}</CardTitle>
+          <CardTitle className="font-mono text-xs font-semibold">{row.id.slice(0, 8)}</CardTitle>
           <div className="flex items-center gap-1">
             <Badge
               variant={
@@ -131,7 +131,7 @@ export default function ExceptionReviewCard({
         </div>
       </CardHeader>
 
-      <CardContent className="space-y-2 pb-2">
+      <CardContent className="space-y-3 pb-3">
         <section aria-label="source-facts">
           <p className="text-[10px] font-medium tracking-wide text-muted-foreground uppercase">
             1 · Source facts
@@ -227,7 +227,7 @@ export default function ExceptionReviewCard({
             3 · AI hypothesis ({row.model_name?.startsWith("groq") ? "AI" : row.model_name === "fake" ? "Offline" : row.model_name ?? "not classified"})
             <Badge
               variant="outline"
-              className="ml-1.5 align-middle text-[9px] text-green-700 border-green-300"
+              className="ml-1.5 align-middle text-[9px] text-success border-success/30"
               title="Output strictly validated via Pydantic. Autonomous ledger-posting disabled."
             >
               🛡 guarded

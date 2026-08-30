@@ -93,7 +93,7 @@ export default function ExceptionsPage() {
   }
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-5">
       {newAlert && (
         <div
           role="alert"
@@ -111,15 +111,15 @@ export default function ExceptionsPage() {
       )}
 
       {evalMetrics && (
-        <div className="rounded-lg border border-blue-200 bg-blue-50/60 px-4 py-3">
+        <div className="rounded-lg border border-info/20 bg-info/5 px-4 py-3">
           <div className="flex flex-wrap items-center gap-2 mb-2">
-            <span className="text-sm font-semibold text-blue-900">
+            <span className="text-sm font-semibold text-info">
               📊 Evaluation vs Ground Truth
             </span>
-            <span className="font-mono text-[10px] bg-blue-100 text-blue-700 px-1.5 py-0.5 rounded">
+            <span className="font-mono text-[10px] bg-info/10 text-info px-1.5 py-0.5 rounded">
               {evalMetrics.total_cases} cases · seed {String(evalMetrics.seed ?? "fixed")}
             </span>
-            <span className="ml-auto text-[10px] italic text-blue-500">
+            <span className="ml-auto text-[10px] italic text-muted-foreground">
               Ground truth isolated from matcher and prompts
             </span>
           </div>
@@ -132,10 +132,10 @@ export default function ExceptionsPage() {
               { label: "LLM Faithfulness", value: evalMetrics.llm_faithfulness_score },
             ].map((m) => (
               <div key={m.label} className="flex flex-col">
-                <span className="text-[10px] font-medium uppercase tracking-wide text-blue-700">
+                <span className="text-[10px] font-medium uppercase tracking-wide text-info">
                   {m.label}
                 </span>
-                <span className="font-mono text-xl font-bold text-blue-900 tabular-nums leading-tight">
+                <span className="font-mono text-xl font-bold text-foreground tabular-nums leading-tight">
                   {formatPct(m.value)}
                 </span>
               </div>

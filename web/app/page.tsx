@@ -25,23 +25,23 @@ export default function DashboardPage() {
   }, [refreshKey]);
 
   return (
-    <div className="space-y-4" data-refresh-key={refreshKey}>
+    <div className="space-y-6" data-refresh-key={refreshKey}>
       <DashboardMetrics summary={latest?.summary ?? null} />
 
-      <div className="grid gap-4 lg:grid-cols-3">
+      <div className="grid gap-6 lg:grid-cols-3">
         <div className="space-y-4 lg:col-span-2">
-          <Card>
+          <Card className="shadow-card">
             <CardHeader className="pb-2">
-              <CardTitle className="text-sm">Latest batch</CardTitle>
+              <CardTitle className="text-sm font-semibold">Latest batch</CardTitle>
             </CardHeader>
             <CardContent className="text-xs text-muted-foreground">
               {latest ? (
-                <div className="space-y-1">
+                <div className="space-y-1.5">
                   <p>
                     Run{" "}
                     <Link
                       href={`/runs/${latest.run_id}`}
-                      className="font-mono text-blue-700 hover:underline"
+                      className="font-mono text-primary hover:underline"
                     >
                       {latest.run_id.slice(0, 8)}
                     </Link>{" "}
@@ -61,7 +61,7 @@ export default function DashboardPage() {
               {latest && (
                 <Link
                   href="/exceptions"
-                  className="inline-block pt-1 text-blue-700 hover:underline"
+                  className="inline-block pt-1.5 text-primary hover:underline"
                 >
                   Review exceptions →
                 </Link>

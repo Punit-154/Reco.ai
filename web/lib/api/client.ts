@@ -112,3 +112,20 @@ export async function listAuditLogs(params?: {
 export async function listSources(): Promise<SourceStatus[]> {
   return request<SourceStatus[]>("/api/imports/sources");
 }
+
+export async function fetchRazorpayLive(): Promise<{
+  ingestion: IngestionSummary;
+  settlements: Record<string, unknown>[];
+  count: number;
+}> {
+  return request("/api/imports/razorpay-live", { method: "POST" });
+}
+
+export async function generateSampleData(): Promise<{
+  bank: IngestionSummary;
+  ledger: IngestionSummary;
+  bank_rows: number;
+  ledger_rows: number;
+}> {
+  return request("/api/imports/generate-sample", { method: "POST" });
+}

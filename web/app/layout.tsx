@@ -17,26 +17,34 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className="min-h-screen bg-background font-sans antialiased">
-        <header className="border-b bg-card">
-          <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-2">
-            <div className="flex items-center gap-4">
-              <span className="text-sm font-semibold tracking-tight">Reco.ai</span>
-              <nav className="flex items-center gap-3 text-xs text-muted-foreground">
-                <Link href="/" className="hover:text-foreground">
+        <header className="sticky top-0 z-40 border-b bg-card/80 backdrop-blur-md">
+          <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-3">
+            <div className="flex items-center gap-6">
+              <span className="text-base font-bold tracking-tight text-primary">
+                Reco.ai
+              </span>
+              <nav className="flex items-center gap-1">
+                <Link
+                  href="/"
+                  className="rounded-md px-3 py-1.5 text-sm font-medium text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
+                >
                   Dashboard
                 </Link>
-                <Link href="/exceptions" className="hover:text-foreground">
+                <Link
+                  href="/exceptions"
+                  className="rounded-md px-3 py-1.5 text-sm font-medium text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
+                >
                   Exceptions
                 </Link>
               </nav>
             </div>
-            <div className="flex items-center gap-1 rounded border border-amber-300 bg-amber-50 px-2 py-0.5 text-[11px] text-amber-900">
-              <ShieldAlert className="size-3" />
-              {DEMO_MODE_LABEL}: {DEMO_ACTOR}
+            <div className="flex items-center gap-1.5 rounded-md border border-amber-300/60 bg-amber-50 px-2.5 py-1 text-[11px] font-medium text-amber-800">
+              <ShieldAlert className="size-3.5" />
+              {DEMO_MODE_LABEL}
             </div>
           </div>
         </header>
-        <main className="mx-auto max-w-7xl px-4 py-4">{children}</main>
+        <main className="mx-auto max-w-7xl px-6 py-6">{children}</main>
         <Toaster position="bottom-right" richColors />
       </body>
     </html>

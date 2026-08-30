@@ -1,6 +1,13 @@
 from __future__ import annotations
 
+import logging
 from typing import Protocol
+
+import httpx
+
+log = logging.getLogger(__name__)
+
+RAZORPAY_API_BASE = "https://api.razorpay.com/v1"
 
 
 class SettlementsSource(Protocol):
@@ -25,7 +32,24 @@ class HttpSettlementsPoller:
         self.key_secret = key_secret
 
     def fetch_settlements(self) -> list[dict]:
-        raise NotImplementedError(
-            "live GET /v1/settlements polling lands in a later phase; "
-            "use FixtureSettlementsPoller for tests and demos"
-        )
+        all_items: list[dict] = []
+        skip = 0
+        count = 100
+
+        with httpx.Client(auth=(self.key_id, self.key_secret), timeout=30) as client:
+            while True:
+                log.info("Fetching settlements skip=%d count=%d", skip, count)
+                resp = client.get(
+                    f"{RAZORPAY_API_BASE}/settlements",
+                    params={"count": count, "skip": skip},
+                )
+                resp.raise_for_status()
+                data = resp.json()
+                items = data.get("items", [])
+                all_items.extend(items)
+                log.info("Got %d settlements (total so far: %d)", len(items), len(all_items))
+                if len(items) < count:
+                    break
+                skip += count
+
+        return all_items

@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { Play, Sparkles, Upload, Zap, Check, Loader2 } from "lucide-react";
+import { Play, Sparkles, Upload, Zap, Check, Loader2, Download, Database } from "lucide-react";
 import { toast } from "sonner";
 
 import { Badge } from "@/components/ui/badge";
@@ -18,7 +18,8 @@ import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
 import {
   classifyPending,
-  getRunMetrics,
+  fetchRazorpayLive,
+  generateSampleData,
   listSources,
   startReconciliationRun,
   uploadSource,
@@ -58,11 +59,16 @@ export default function SourceUploadPanel({ onImported }: { onImported?: () => v
     byCategory: Record<string, number>;
   } | null>(null);
 
+  const [razorpaySettlements, setRazorpaySettlements] = useState<Record<string, unknown>[]>([]);
+  const [fetchingLive, setFetchingLive] = useState(false);
+  const [generating, setGenerating] = useState(false);
+
   useEffect(() => {
     listSources().then(setSources).catch(() => {});
-  }, [summaries, pipelineResult]);
+  }, [summaries, pipelineResult, razorpaySettlements]);
 
   const allFilesSelected = SOURCES.every((s) => files[s.kind]);
+  const hasSettlements = razorpaySettlements.length > 0 || sources.some((s) => s.kind === "razorpay_settlements" && s.txn_count > 0);
 
   async function handleUpload(kind: string) {
     const file = files[kind];
@@ -79,6 +85,36 @@ export default function SourceUploadPanel({ onImported }: { onImported?: () => v
       toast.error(`Upload failed: ${(e as Error).message}`);
     } finally {
       setBusy(false);
+    }
+  }
+
+  async function handleFetchRazorpay() {
+    setFetchingLive(true);
+    try {
+      const result = await fetchRazorpayLive();
+      setRazorpaySettlements(result.settlements);
+      const count = result.count ?? result.settlements?.length ?? 0;
+      toast.success(`Fetched ${count} settlements from Razorpay API`);
+      onImported?.();
+    } catch (e) {
+      toast.error(`Razorpay API: ${(e as Error).message}`);
+    } finally {
+      setFetchingLive(false);
+    }
+  }
+
+  async function handleGenerateSample() {
+    setGenerating(true);
+    try {
+      const result = await generateSampleData();
+      toast.success(
+        `Generated ${result.bank_rows} bank rows + ${result.ledger_rows} ledger rows from settlements`
+      );
+      onImported?.();
+    } catch (e) {
+      toast.error(`Sample generation: ${(e as Error).message}`);
+    } finally {
+      setGenerating(false);
     }
   }
 
@@ -112,17 +148,21 @@ export default function SourceUploadPanel({ onImported }: { onImported?: () => v
     }
   }
 
+  const hasData = hasSettlements || SOURCES.some((s) => files[s.kind] || summaries[s.kind]);
+
   async function handlePipeline() {
-    if (!allFilesSelected) return;
     setBusy(true);
     setPipelineResult(null);
 
     try {
       setPipelineStep("uploading");
       for (const source of SOURCES) {
-        const file = files[source.kind]!;
-        const summary = await uploadSource(source.kind, file);
-        setSummaries((prev) => ({ ...prev, [source.kind]: summary }));
+        const file = files[source.kind];
+        if (file && !summaries[source.kind]) {
+          const summary = await uploadSource(source.kind, file);
+          setSummaries((prev) => ({ ...prev, [source.kind]: summary }));
+          onImported?.();
+        }
       }
 
       setPipelineStep("reconciling");
@@ -152,14 +192,14 @@ export default function SourceUploadPanel({ onImported }: { onImported?: () => v
   }
 
   return (
-    <Card>
-      <CardHeader className="pb-2">
-        <CardTitle className="text-sm">Source uploads</CardTitle>
+    <Card className="shadow-card">
+      <CardHeader className="pb-3">
+        <CardTitle className="text-sm font-semibold">Source uploads</CardTitle>
         <CardDescription className="text-xs">
-          Upload CSV/JSON files to reconcile. Files are normalized to integer paise.
+          Connect to Razorpay API or upload CSV/JSON files to reconcile.
         </CardDescription>
       </CardHeader>
-      <CardContent className="space-y-3">
+      <CardContent className="space-y-4">
         {sources.length > 0 && (
           <div className="flex flex-wrap gap-1.5">
             {sources.map((s) => (
@@ -170,9 +210,68 @@ export default function SourceUploadPanel({ onImported }: { onImported?: () => v
           </div>
         )}
 
+        <div className="rounded-md border border-primary/20 bg-primary/5 p-3 space-y-2">
+          <p className="text-xs font-semibold text-primary">Live Razorpay Connection</p>
+          <p className="text-[11px] text-muted-foreground">
+            Fetch settlements directly from Razorpay&apos;s Settlements API using your test-mode keys.
+          </p>
+          <div className="flex gap-2">
+            <Button
+              size="sm"
+              className="h-8"
+              disabled={fetchingLive}
+              onClick={handleFetchRazorpay}
+            >
+              {fetchingLive ? (
+                <Loader2 className="size-3 animate-spin" />
+              ) : (
+                <Download className="size-3" />
+              )}{" "}
+              Fetch from Razorpay
+            </Button>
+            <Button
+              size="sm"
+              variant="outline"
+              className="h-8"
+              disabled={generating || !hasSettlements}
+              onClick={handleGenerateSample}
+            >
+              {generating ? (
+                <Loader2 className="size-3 animate-spin" />
+              ) : (
+                <Database className="size-3" />
+              )}{" "}
+              Generate sample bank + ledger
+            </Button>
+          </div>
+          {razorpaySettlements.length > 0 && (
+            <div className="space-y-1">
+              <p className="text-[10px] font-medium text-muted-foreground uppercase">
+                Fetched {razorpaySettlements.length} settlements
+              </p>
+              <div className="max-h-24 space-y-0.5 overflow-y-auto">
+                {razorpaySettlements.slice(0, 10).map((s, i) => (
+                  <div key={i} className="flex items-center justify-between font-mono text-[10px] text-muted-foreground">
+                    <span>{String(s.id ?? "").slice(0, 20)}</span>
+                    <span>₹{((Number(s.amount ?? 0)) / 100).toLocaleString("en-IN")}</span>
+                    <span>{String(s.utr ?? "—")}</span>
+                  </div>
+                ))}
+                {razorpaySettlements.length > 10 && (
+                  <p className="text-[9px] text-muted-foreground">
+                    ...and {razorpaySettlements.length - 10} more
+                  </p>
+                )}
+              </div>
+            </div>
+          )}
+        </div>
+
+        <Separator />
+
         {SOURCES.map((source) => (
-          <div key={source.kind} className="space-y-1">
-            <Label className="text-xs">{source.label}</Label>
+          <div key={source.kind} className="space-y-1.5">
+            <Label className="text-xs font-medium">{source.label}</Label>
             <div className="flex items-center gap-2">
               <Input
                 ref={(el) => {
@@ -226,7 +325,7 @@ export default function SourceUploadPanel({ onImported }: { onImported?: () => v
           <Button
             size="sm"
             className="h-8"
-            disabled={busy || !allFilesSelected}
+            disabled={busy || !hasData}
             onClick={handlePipeline}
           >
             {busy && pipelineStep ? (
@@ -234,13 +333,13 @@ export default function SourceUploadPanel({ onImported }: { onImported?: () => v
             ) : (
               <Zap className="size-3" />
             )}{" "}
-            Run full pipeline
+            Run pipeline
           </Button>
-          <Button size="sm" className="h-8" disabled={busy} onClick={handleRun}>
-            <Play className="size-3" /> Run reconciliation
+          <Button size="sm" className="h-8" disabled={busy || !hasData} onClick={handleRun}>
+            <Play className="size-3" /> Reconcile
           </Button>
           <Button size="sm" variant="outline" className="h-8" disabled={busy} onClick={handleClassify}>
-            <Sparkles className="size-3" /> Classify pending
+            <Sparkles className="size-3" /> Classify
           </Button>
         </div>
 
@@ -252,11 +351,11 @@ export default function SourceUploadPanel({ onImported }: { onImported?: () => v
         )}
 
         {pipelineResult && (
-          <div className="rounded-md border p-2.5 space-y-1.5 text-xs bg-muted/30">
+          <div className="rounded-md border p-3 space-y-2 text-xs bg-muted/30">
             <div className="flex items-center gap-1.5 font-medium">
-              <Check className="size-3 text-green-600" /> Pipeline complete
+              <Check className="size-3 text-success" /> Pipeline complete
             </div>
-            <div className="grid grid-cols-2 gap-x-4 gap-y-0.5 font-mono text-[11px]">
+            <div className="grid grid-cols-2 gap-x-4 gap-y-1 font-mono text-[11px]">
               <span className="text-muted-foreground">matched</span>
               <span>{pipelineResult.matched}</span>
               <span className="text-muted-foreground">exceptions</span>

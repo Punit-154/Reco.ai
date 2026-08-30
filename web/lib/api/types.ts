@@ -129,3 +129,16 @@ export interface SourceStatus {
   name: string;
   txn_count: number;
 }
+
+export interface RazorpayLiveResponse {
+  ingestion: IngestionSummary;
+  settlements: Record<string, unknown>[];
+  count: number;
+}
+
+export interface SampleDataResponse {
+  bank: IngestionSummary;
+  ledger: IngestionSummary;
+  bank_rows: number;
+  ledger_rows: number;
+}
