@@ -1,100 +1,130 @@
-# Reco.ai — AI Finance Controller (demo)
+# Reco.ai — AI-Powered Finance Reconciliation
 
-Deterministic-first reconciliation across Razorpay settlements, bank statements,
-and an internal ledger, with AI classification reserved for unresolved residue and
-a human-approved audit trail.
+> Automated reconciliation across Razorpay settlements, bank statements, and internal ledgers. Deterministic matching first, AI for the hard cases, humans always in control.
 
-**Demo mode — single reviewer** (`demo_finance_controller`). Not production auth.
-All data in this repository is **synthetic**; no live merchant or customer data is
-included. See `docs/contracts/README.md` and the statement below.
+---
 
-## Stack
+## What it does
 
-- Backend: FastAPI + SQLAlchemy 2.x + Alembic + Pandas + Pydantic (Postgres 16 via Docker)
-- Frontend: Next.js 16 (Node 22) + Tailwind + shadcn/ui + lucide-react
-- LLM (optional): Groq behind the `ExceptionClassifier` interface; tests never call it
+Finance teams waste hours manually matching settlement IDs across systems. Reco.ai automates this with a three-layer approach:
 
-## Quickstart (one command)
+1. **Deterministic matching** — exact UTR + amount, date-window heuristics, and ledger equations handle ~75% of cases instantly
+2. **AI classification** — Groq-powered LLM classifies unmatched residue into actionable categories (fee deltas, refund lags, duplicates, etc.)
+3. **Human approval** — every AI decision requires human review with full audit trail
 
-```bash
-# prerequisites: Docker running, Python 3.12+, Node 22, backend venv active
-cp .env.example .env            # set POSTGRES_PASSWORD (local only)
-python scripts/run_demo.py      # add --skip-docker if Postgres is already up
+**Result:** 75 auto-matched, 25 exceptions surfaced, all classified — in under 5 seconds.
+
+## Key Features
+
+- **Razorpay API integration** — fetch settlements live from Razorpay's API (test mode)
+- **Smart upload pipeline** — select files and hit "Run pipeline" — uploads, reconciles, and classifies in one click
+- **4 difficulty test sets** — clean (15% issues), balanced (40%), messy (65%), stress (80%)
+- **AI hypothesis cards** — plain-language explanations with resolved evidence (external ID, amount, date)
+- **Append-only audit log** — every approve/reject/override preserves the AI hypothesis and human reason
+- **CSV export** — export exception list with full context for external review
+- **Live evaluation metrics** — deterministic match rate, exception recall, AI accuracy, faithfulness score
+
+## How it works
+
+```
+┌─────────────────────────────────────────────────────────┐
+│                    DATA INGESTION                        │
+│  Razorpay API ──→ Settlements                           │
+│  Bank CSV     ──→ Bank statements                       │
+│  Ledger CSV   ──→ Internal ledger entries                │
+└──────────────────────────┬──────────────────────────────┘
+                           │
+                           ▼
+┌─────────────────────────────────────────────────────────┐
+│               DETERMINISTIC MATCHING                     │
+│  Step 1: EXACT_UTR_AMOUNT     (unique UTR + amount)    │
+│  Step 2: AMOUNT_DATE_WINDOW   (±2 day heuristics)      │
+│  Step 3: LEDGER_NET_EXACT     (gross - fee - tax = net) │
+│                                                         │
+│  ~75% auto-matched ──→ Match Groups                     │
+│  ~25% residue      ──→ Exceptions                       │
+└──────────────────────────┬──────────────────────────────┘
+                           │
+                           ▼
+┌─────────────────────────────────────────────────────────┐
+│                 AI CLASSIFICATION                        │
+│  Groq LLM (or offline FakeClassifier)                   │
+│  Categories: FEE_DELTA | REFUND_LAG | DUPLICATE_UTR     │
+│              UNRECOGNIZED_CREDIT | AMBIGUOUS_MATCH       │
+│                                                         │
+│  Pydantic-validated JSON output                         │
+│  Plain-language explanations + resolved evidence         │
+└──────────────────────────┬──────────────────────────────┘
+                           │
+                           ▼
+┌─────────────────────────────────────────────────────────┐
+│                  HUMAN REVIEW                            │
+│  Approve  ──→ exception resolved                        │
+│  Reject   ──→ exception closed with reason              │
+│  Override ──→ reclassify with human judgment             │
+│                                                         │
+│  Full audit trail: who, what, when, AI hypothesis       │
+└─────────────────────────────────────────────────────────┘
 ```
 
-The script: starts Postgres → migrates to head → regenerates deterministic
-fixtures → starts backend (:8000) and frontend (:3000) → ingests fixtures →
-runs reconciliation → classifies residue (Fake classifier offline; Groq live
-only if `GROQ_API_KEY` + `GROQ_MODEL` are set) → prints evaluation metrics and
-opens the dashboard.
-
-**Deploying publicly?** See [`docs/deployment.md`](docs/deployment.md)
-(Vercel + Render + Supabase + Groq env setup).
-
-## Multiple difficulty test sets
-
-```powershell
-python scripts/generate_test_sets.py          # writes fixtures/test_sets/{clean,balanced,messy,stress}
-python scripts/reset_demo_data.py             # wipe runtime data between uploads
-```
-
-Each set is 100 cases with a different issue density (15% / 40% / 65% / 80%).
-Upload one set via the dashboard, run reconciliation + classification, then
-reset before the next set so results stay clean.
-
-## Manual flow
+## Quick Start
 
 ```bash
-docker compose up -d                       # Postgres on :5432
-cd backend && python -m alembic upgrade head
+# One command — full demo with synthetic data
+python scripts/run_demo.py --skip-docker
 
-# generate fixtures deterministically (seeded)
-python scripts/generate_synthetic_data.py --seed 42
+# Blank slate — upload your own files
+python scripts/run_demo.py --clean --skip-docker
 
-# start services
-cd backend && python -m uvicorn app.main:app --port 8000
-cd web && npm install && npm run build && npm run start   # or npm run dev
+# Razorpay live — auto-fetch from API
+python scripts/run_demo.py --razorpay --skip-docker
 ```
 
-Then upload `fixtures/synthetic/*.csv|json` from the dashboard's Source uploads
-panel (or let `scripts/run_demo.py` do it), press **Run reconciliation**, then
-**Classify pending (offline demo)**.
+**Prerequisites:** Docker (for Postgres), Python 3.12+, Node 22+
 
-## Tests
+## Tech Stack
+
+| Layer | Technology |
+|-------|-----------|
+| Backend | FastAPI, SQLAlchemy 2.x, Alembic, Pydantic, Pandas |
+| Database | PostgreSQL 16 |
+| Frontend | Next.js 16, Tailwind CSS, shadcn/ui, lucide-react |
+| AI | Groq (llama-3.3-70b-versatile), behind `ExceptionClassifier` interface |
+| API | Razorpay Settlements API (test mode) |
+
+## Testing
 
 ```bash
-cd backend && python -m pytest tests -v    # 98 tests; no live Razorpay/Groq calls
+cd backend && python -m pytest tests -v    # 98 tests, no live API calls
 cd web && npm run lint && npm run build
 ```
 
-CI-safe by design: webhooks are tested with locally computed HMAC signatures, the
-LLM layer uses `FakeExceptionClassifier` and scripted transports.
+CI-safe: webhooks tested with local HMAC signatures, LLM uses `FakeExceptionClassifier`.
 
-## Evaluation metrics (reported separately, never weighted together)
+## Evaluation Metrics
 
-- Deterministic Match Score = correct auto-matches / auto-matches
-- Deterministic Coverage = auto-matches / eligible matchable cases
-- Exception Recall = surfaced known exceptions / known exceptions
-- AI Classification Accuracy = correct AI classifications / AI-classified cases
-- LLM Faithfulness Score = mean evidence-support across evaluated explanations
+| Metric | What it measures |
+|--------|-----------------|
+| Deterministic Match Rate | Correct auto-matches / total auto-matches |
+| Deterministic Coverage | Auto-matches / eligible cases |
+| Exception Recall | Known exceptions surfaced / total known |
+| AI Classification Accuracy | Correct AI labels / AI-classified cases |
+| LLM Faithfulness Score | Evidence-support across explanations |
 
-Ground truth lives only in `fixtures/synthetic/ground_truth.json` and is read
-exclusively by the evaluation service (`backend/app/services/evaluation/metrics.py`)
-— never by the matcher, prompts, or UI.
+Ground truth is isolated in `fixtures/synthetic/ground_truth.json` — never leaked to prompts or matchers.
 
-## Repository layout
+## Repository Layout
 
 ```
 backend/app          FastAPI app (routers, models, services)
-backend/alembic      migrations
+backend/alembic      Database migrations
 web                  Next.js dashboard
-fixtures/synthetic   generated demo batch (100 cases) + ground_truth.json
-scripts              generate_synthetic_data.py · run_demo.py
-docs/contracts       Razorpay payload contract fixtures (synthetic)
-docs/judge_defense.md  answers to the standard buildathon challenges
+fixtures/synthetic   Demo batch (100 cases) + ground_truth.json
+fixtures/test_sets   Clean / balanced / messy / stress difficulty sets
+scripts              run_demo.py · generate_test_sets.py · reset_demo_data.py
+docs/deployment.md   Vercel + Render + Supabase deploy guide
 ```
 
-## Non-goals
+## License
 
-No Prisma, no auto-ledger posting by AI, no fake `settlement.created` webhook,
-no multi-user authorization, no invented rubric weights.
+Demo project — no production use. All data is synthetic.
