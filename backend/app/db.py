@@ -1,7 +1,12 @@
+from __future__ import annotations
+
 from sqlalchemy import create_engine
 from sqlalchemy.orm import Session, sessionmaker
 
 from .config import get_settings
+
+_engine = None
+_session_factory = None
 
 
 def make_engine(database_url: str | None = None):
@@ -9,13 +14,26 @@ def make_engine(database_url: str | None = None):
     return create_engine(url, pool_pre_ping=True)
 
 
-engine = make_engine()
+def _get_engine():
+    global _engine
+    if _engine is None:
+        settings = get_settings()
+        url = settings.sync_database_url()
+        _engine = create_engine(url, pool_pre_ping=True)
+    return _engine
 
-SessionLocal = sessionmaker(bind=engine, autoflush=False, expire_on_commit=False)
+
+def _get_session_factory():
+    global _session_factory
+    if _session_factory is None:
+        _session_factory = sessionmaker(
+            bind=_get_engine(), autoflush=False, expire_on_commit=False
+        )
+    return _session_factory
 
 
 def get_db():
-    db = SessionLocal()
+    db = _get_session_factory()()
     try:
         yield db
     finally:
