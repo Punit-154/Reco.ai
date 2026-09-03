@@ -224,7 +224,7 @@ export default function ExceptionReviewCard({
 
         <section aria-label="ai-hypothesis">
           <p className="text-[10px] font-medium tracking-wide text-muted-foreground uppercase">
-            3 · AI hypothesis ({row.model_name?.startsWith("groq") ? "AI" : row.model_name === "fake" ? "Offline" : row.model_name ?? "not classified"})
+            3 · AI hypothesis ({row.model_name?.startsWith("groq") ? "AI" : row.model_name === "fake" ? "Rules engine" : row.model_name ?? "not classified"})
             <Badge
               variant="outline"
               className="ml-1.5 align-middle text-[9px] text-success border-success/30"

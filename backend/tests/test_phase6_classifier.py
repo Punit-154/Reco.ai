@@ -17,7 +17,7 @@ from app.services.ai.classifier import (
     get_classifier,
 )
 from app.services.ai.evidence import build_evidence_pack
-from app.services.ai.triage import MAX_CONCURRENCY, classify_pending_exceptions
+from app.services.ai.triage import BATCH_SIZE, classify_pending_exceptions
 from app.services.ingestion.importers import (
     ingest_bank_csv,
     ingest_ledger_csv,
@@ -358,8 +358,8 @@ def test_get_classifier_selects_groq_only_when_configured():
     assert isinstance(get_classifier(settings_stub, use_ai=False), FakeExceptionClassifier)
 
 
-def test_concurrency_bound_is_three():
-    assert MAX_CONCURRENCY == 3
+def test_batch_size_is_five():
+    assert BATCH_SIZE == 5
 
 
 def test_failure_categories_are_deferred_and_retryable(residue_loaded):

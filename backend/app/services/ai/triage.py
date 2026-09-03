@@ -16,7 +16,8 @@ from app.services.ai.classifier import (
 )
 from app.services.ai.evidence import build_evidence_pack
 
-MAX_CONCURRENCY = 3
+BATCH_SIZE = 5
+MAX_CONCURRENT_BATCHES = 2
 
 QUEUE_TAXONOMIES = ("PENDING_AI_REVIEW", "AMBIGUOUS_MATCH")
 
@@ -36,6 +37,11 @@ def pending_exceptions(db: Session, limit: int = 100) -> list[ExceptionRecord]:
     )
 
 
+def _chunks(lst: list, size: int):
+    for i in range(0, len(lst), size):
+        yield lst[i : i + size]
+
+
 def classify_pending_exceptions(
     db: Session,
     classifier: ExceptionClassifier,
@@ -49,23 +55,44 @@ def classify_pending_exceptions(
         if pack is not None:
             packs.append((exception, pack))
 
-    classifications: dict = {}
-    with ThreadPoolExecutor(max_workers=MAX_CONCURRENCY) as executor:
+    classifications: dict[str, object] = {}
+
+    batch_groups = list(_chunks(packs, BATCH_SIZE))
+
+    def _run_batch(batch: list[tuple[ExceptionRecord, dict]]) -> dict:
+        batch_packs = [p for _, p in batch]
+        return classifier.classify_batch(batch_packs)
+
+    with ThreadPoolExecutor(max_workers=MAX_CONCURRENT_BATCHES) as executor:
         futures = {
-            executor.submit(classifier.classify, pack): exception
-            for exception, pack in packs
+            executor.submit(_run_batch, batch): batch for batch in batch_groups
         }
         for future in as_completed(futures):
-            exception = futures[future]
-            classifications[exception.id] = future.result()
+            batch = futures[future]
+            try:
+                result = future.result()
+                classifications.update(result)
+            except Exception:
+                for _exc, pack in batch:
+                    eid = pack.get("exception_id", "unknown")
+                    classifications[eid] = _failure_classification(
+                        ClassificationCategory.MODEL_UNAVAILABLE,
+                        "batch classification failed",
+                        pack,
+                    )
 
     by_category: Counter[str] = Counter()
     classified = 0
     deferred = 0
 
-    for exception, _pack in packs:
-        classification = classifications[exception.id]
-        if classification.category.value in FAILURE_CATEGORIES:
+    for exception, pack in packs:
+        eid = pack.get("exception_id", str(exception.id))
+        classification = classifications.get(eid)
+        if classification is None:
+            deferred += 1
+            continue
+
+        if getattr(classification, "category", None) and classification.category.value in FAILURE_CATEGORIES:
             exception.retry_count += 1
             deferred += 1
             continue
@@ -100,3 +127,21 @@ def classify_pending_exceptions(
         "deferred_retry": deferred,
         "by_category": dict(by_category),
     }
+
+
+def _failure_classification(
+    category: ClassificationCategory,
+    explanation: str,
+    evidence_pack: dict,
+):
+    from app.services.ai.classifier import ExceptionClassification
+
+    bank = evidence_pack.get("bank_transaction", {}) or {}
+    ids = [str(bank.get("transaction_id"))] if bank.get("transaction_id") else []
+    return ExceptionClassification(
+        category=category,
+        confidence=0,
+        explanation=explanation[:500],
+        evidence_transaction_ids=ids,
+        requires_human_review=True,
+    )

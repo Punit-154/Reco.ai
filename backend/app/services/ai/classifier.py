@@ -8,6 +8,7 @@ from pydantic import BaseModel, ConfigDict, Field, ValidationError
 
 PROMPT_VERSION_FAKE = "v0-fake"
 PROMPT_VERSION_GROQ = "v1-groq"
+PROMPT_VERSION_GROQ_BATCH = "v2-groq-batch"
 
 LLM_CATEGORIES = (
     "FEE_DELTA",
@@ -137,6 +138,14 @@ class FakeExceptionClassifier:
             requires_human_review=True,
         )
 
+    def classify_batch(
+        self, packs: list[dict]
+    ) -> dict[str, ExceptionClassification]:
+        return {
+            pack.get("exception_id", str(i)): self.classify(pack)
+            for i, pack in enumerate(packs)
+        }
+
 
 class ProviderError(Exception):
     pass
@@ -169,6 +178,37 @@ Rules:
 - In evidence_transaction_ids, cite the human-readable external_id values (e.g. "sett_9bcad5...", "pay_..."), NOT the internal UUID transaction_id values.
 - Write the explanation in plain language: avoid jargon, use short sentences, explain what happened and why it needs human review.
 - Always set requires_human_review to true.
+"""
+
+BATCH_SYSTEM_PROMPT = (
+    "You are a finance reconciliation assistant. You classify multiple unresolved "
+    "exceptions at a time using only the facts provided for each. Write in plain, "
+    "simple language that a non-technical auditor can understand. Respond with strict "
+    "JSON only; no prose before or after."
+)
+
+BATCH_PROMPT_TEMPLATE = """Classify each of the $batch_count reconciliation exceptions below.
+
+Return ONLY a JSON array of exactly $batch_count objects, one per exception, in the same order.
+Each object must have exactly these keys:
+{"exception_id": "<the exception_id from the facts>",
+ "category": "<one allowed category>",
+ "confidence": <integer 0-100>,
+ "explanation": "<one short paragraph in plain language>",
+ "evidence_transaction_ids": ["external_id values from the facts, NOT internal UUIDs"],
+ "requires_human_review": true}
+
+Allowed categories: $allowed_categories
+
+Exceptions (JSON array):
+$exception_facts_batch
+
+Rules:
+- Use only the facts provided for each exception; never invent transaction ids or amounts.
+- In evidence_transaction_ids, cite the human-readable external_id values (e.g. "sett_9bcad5...", "pay_..."), NOT the internal UUID transaction_id values.
+- Write each explanation in plain language: avoid jargon, use short sentences.
+- Always set requires_human_review to true.
+- Return exactly $batch_count objects in the array, no more, no less.
 """
 
 
@@ -295,6 +335,85 @@ class GroqExceptionClassifier:
 
         return self._sanitize(classification)
 
+    def render_batch_prompt(
+        self, packs: list[dict]
+    ) -> tuple[str, str]:
+        user_prompt = BATCH_PROMPT_TEMPLATE.replace(
+            "$allowed_categories", ", ".join(LLM_CATEGORIES)
+        ).replace("$batch_count", str(len(packs))).replace(
+            "$exception_facts_batch",
+            json.dumps(packs, default=str),
+        )
+        if "$allowed_categories" in user_prompt or "$exception_facts_batch" in user_prompt:
+            raise ValueError("batch prompt template has unsubstituted placeholders")
+        return BATCH_SYSTEM_PROMPT, user_prompt
+
+    def _parse_batch_content(
+        self, content: str, pack_count: int
+    ) -> list[ExceptionClassification] | None:
+        try:
+            data = json.loads(content)
+            if not isinstance(data, list) or len(data) != pack_count:
+                return None
+            return [ExceptionClassification.model_validate(item) for item in data]
+        except (json.JSONDecodeError, ValidationError, TypeError):
+            return None
+
+    def classify_batch(
+        self, packs: list[dict]
+    ) -> dict[str, ExceptionClassification]:
+        if len(packs) == 1:
+            result = self.classify(packs[0])
+            eid = packs[0].get("exception_id", "unknown")
+            return {eid: result}
+
+        system_prompt, user_prompt = self.render_batch_prompt(packs)
+        messages = [
+            {"role": "system", "content": system_prompt},
+            {"role": "user", "content": user_prompt},
+        ]
+
+        try:
+            content, _ = self._send_with_retry(messages)
+        except (ProviderError, RuntimeError) as exc:
+            return {
+                p.get("exception_id", str(i)): _failure(
+                    ClassificationCategory.MODEL_UNAVAILABLE, str(exc), p
+                )
+                for i, p in enumerate(packs)
+            }
+
+        classifications = self._parse_batch_content(content, len(packs))
+        if classifications is None:
+            repair_messages = messages + [
+                {"role": "assistant", "content": content[:3000]},
+                {
+                    "role": "user",
+                    "content": "That was not valid JSON for the required schema. "
+                    "Return only the corrected JSON array.",
+                },
+            ]
+            try:
+                content, _ = self._send_with_retry(repair_messages)
+                classifications = self._parse_batch_content(content, len(packs))
+            except (ProviderError, RuntimeError):
+                classifications = None
+
+        if classifications is None:
+            return {
+                p.get("exception_id", str(i)): _failure(
+                    ClassificationCategory.INVALID_MODEL_OUTPUT,
+                    "model output was not schema-valid JSON after one repair retry",
+                    p,
+                )
+                for i, p in enumerate(packs)
+            }
+
+        return {
+            packs[i].get("exception_id", str(i)): self._sanitize(c)
+            for i, c in enumerate(classifications)
+        }
+
 
 def get_classifier(settings: Any, use_ai: bool = False) -> ExceptionClassifier:
     if use_ai and getattr(settings, "groq_api_key", "") and getattr(settings, "groq_model", ""):
@@ -315,4 +434,5 @@ __all__ = [
     "ProviderError",
     "ValidationError",
     "get_classifier",
+    "PROMPT_VERSION_GROQ_BATCH",
 ]
