@@ -9,7 +9,7 @@ from sqlalchemy.orm import Session
 
 from ..config import get_settings
 from ..db import get_db
-from ..models import AuditLog, ExceptionRecord
+from ..models import AuditLog, ExceptionRecord, Transaction
 from ..schemas.classification import ClassifyPendingRequest
 from ..services.ai.classifier import ClassificationCategory, get_classifier
 from ..services.ai.triage import classify_pending_exceptions
@@ -25,8 +25,8 @@ STATUS_BY_ACTION = {
 }
 
 
-def _serialize(row: ExceptionRecord) -> dict:
-    return {
+def _serialize(row: ExceptionRecord, db: Session | None = None) -> dict:
+    result = {
         "id": str(row.id),
         "status": row.status,
         "taxonomy": row.taxonomy,
@@ -41,13 +41,55 @@ def _serialize(row: ExceptionRecord) -> dict:
         "retry_count": row.retry_count,
     }
 
+    response = row.response or {}
+    evidence_ids = response.get("evidence_transaction_ids") or []
+    if evidence_ids and db is not None:
+        import uuid as _uuid
+
+        uuid_vals = []
+        external_ids = []
+        for eid in evidence_ids:
+            try:
+                uuid_vals.append(_uuid.UUID(eid))
+            except (ValueError, TypeError):
+                external_ids.append(eid)
+
+        txn_map: dict = {}
+        if uuid_vals:
+            txns = db.execute(
+                select(Transaction).where(Transaction.id.in_(uuid_vals))
+            ).scalars().all()
+            for t in txns:
+                txn_map[str(t.id)] = t
+        if external_ids:
+            txns = db.execute(
+                select(Transaction).where(Transaction.external_id.in_(external_ids))
+            ).scalars().all()
+            for t in txns:
+                txn_map[t.external_id] = t
+
+        result["resolved_evidence"] = [
+            {
+                "id": eid,
+                "external_id": txn_map[eid].external_id if eid in txn_map else eid,
+                "amount_paise": txn_map[eid].amount_paise if eid in txn_map else None,
+                "kind": txn_map[eid].transaction_kind if eid in txn_map else None,
+                "effective_date": txn_map[eid].effective_date.isoformat() if eid in txn_map else None,
+            }
+            for eid in evidence_ids
+        ]
+    else:
+        result["resolved_evidence"] = []
+
+    return result
+
 
 @router.get("")
 def list_exceptions(db: Session = Depends(get_db)):
     rows = db.execute(
         select(ExceptionRecord).order_by(ExceptionRecord.created_at).limit(500)
     ).scalars().all()
-    return [_serialize(r) for r in rows]
+    return [_serialize(r, db) for r in rows]
 
 
 @router.post("/classify-pending")
@@ -160,7 +202,7 @@ def get_exception(exception_id: str, db: Session = Depends(get_db)):
     row = db.get(ExceptionRecord, parsed)
     if row is None:
         raise HTTPException(status_code=404, detail="exception not found")
-    return _serialize(row)
+    return _serialize(row, db)
 
 
 @router.post("/{exception_id}/decision")

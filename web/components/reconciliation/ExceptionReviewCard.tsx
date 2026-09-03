@@ -24,7 +24,7 @@ import {
 import { Separator } from "@/components/ui/separator";
 import { Textarea } from "@/components/ui/textarea";
 import { decideException } from "@/lib/api/client";
-import type { ExceptionRow } from "@/lib/api/types";
+import type { ExceptionRow, ResolvedEvidenceItem } from "@/lib/api/types";
 import { formatPaise } from "@/lib/format";
 
 const CATEGORY_OPTIONS = [
@@ -247,9 +247,23 @@ export default function ExceptionReviewCard({
                 )}
               </div>
               <p className="text-[11px] leading-snug">{ai.explanation}</p>
-              <p className="font-mono text-[10px] break-all text-muted-foreground">
-                evidence: {ai.evidence_transaction_ids.join(", ") || "—"}
-              </p>
+              {row.resolved_evidence && row.resolved_evidence.length > 0 ? (
+                <div className="mt-1 space-y-0.5">
+                  <p className="text-[10px] font-medium text-muted-foreground uppercase">Evidence</p>
+                  {row.resolved_evidence.map((item: ResolvedEvidenceItem) => (
+                    <div key={item.id} className="flex items-center gap-2 font-mono text-[10px] text-muted-foreground">
+                      <span className="font-semibold text-foreground">{item.external_id ?? item.id.slice(0, 12)}</span>
+                      {item.kind && <Badge variant="outline" className="text-[8px] px-1 py-0">{item.kind}</Badge>}
+                      {item.amount_paise != null && <span>{(item.amount_paise / 100).toLocaleString("en-IN", { style: "currency", currency: "INR" })}</span>}
+                      {item.effective_date && <span>{item.effective_date}</span>}
+                    </div>
+                  ))}
+                </div>
+              ) : ai.evidence_transaction_ids.length > 0 ? (
+                <p className="font-mono text-[10px] break-all text-muted-foreground">
+                  evidence: {ai.evidence_transaction_ids.join(", ")}
+                </p>
+              ) : null}
             </div>
           ) : (
             <p className="mt-0.5 text-[11px] text-muted-foreground">Not classified.</p>
@@ -332,7 +346,7 @@ export default function ExceptionReviewCard({
               <PencilLine className="size-3" /> Manual override
             </Button>
           </>
-        ) : (
+        ) : overrideMode ? (
           <Button
             size="sm"
             variant="ghost"
@@ -341,7 +355,7 @@ export default function ExceptionReviewCard({
           >
             Cancel override
           </Button>
-        )}
+        ) : null}
       </CardFooter>
     </Card>
   );

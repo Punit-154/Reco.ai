@@ -61,6 +61,14 @@ export interface AiHypothesis {
   requires_human_review: boolean;
 }
 
+export interface ResolvedEvidenceItem {
+  id: string;
+  external_id: string | null;
+  amount_paise: number | null;
+  kind: string | null;
+  effective_date: string | null;
+}
+
 export interface ExceptionEvidence {
   reason_code?: string;
   explanation?: string;
@@ -83,6 +91,7 @@ export interface ExceptionRow {
   prompt_version: string | null;
   response: AiHypothesis | null;
   evidence: ExceptionEvidence | null;
+  resolved_evidence: ResolvedEvidenceItem[];
   faithfulness_score: number | null;
   retry_count: number;
 }

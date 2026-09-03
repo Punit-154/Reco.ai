@@ -76,8 +76,9 @@ class FakeExceptionClassifier:
         bank = evidence_pack.get("bank_transaction") or {}
         related = evidence_pack.get("related_settlements") or []
         utr = str(bank.get("normalized_utr") or "")
-        evidence_ids = [str(bank.get("transaction_id"))] + [
-            str(s.get("transaction_id")) for s in related
+
+        evidence_ids = [str(bank.get("external_id"))] + [
+            str(s.get("external_id")) for s in related
         ]
         evidence_ids = [i for i in evidence_ids if i and i != "None"]
 
@@ -86,8 +87,10 @@ class FakeExceptionClassifier:
                 category=ClassificationCategory.DUPLICATE_UTR,
                 confidence=95,
                 explanation=(
-                    f"Normalized UTR {utr} appears on {len(related)} settlements; "
-                    "deterministic matching refused to auto-match non-unique candidates."
+                    f"The bank UTR \"{utr}\" appears on {len(related)} different Razorpay settlements. "
+                    "Because the same UTR is shared by multiple settlements, automatic matching was "
+                    "skipped to avoid incorrectly pairing them. A human should review which settlement "
+                    "this bank credit belongs to."
                 ),
                 evidence_transaction_ids=evidence_ids,
                 requires_human_review=True,
@@ -98,9 +101,9 @@ class FakeExceptionClassifier:
                 category=ClassificationCategory.UNRECOGNIZED_CREDIT,
                 confidence=80,
                 explanation=(
-                    f"Bank credit {bank.get('external_id')} of "
-                    f"{bank.get('amount_paise')} paise has no settlement or ledger "
-                    "candidate; source of funds is unidentified."
+                    f"A bank credit of {bank.get('amount_paise')} paise (ref: {bank.get('external_id')}) "
+                    "has no matching Razorpay settlement or ledger entry. The source of these funds is "
+                    "unclear and needs manual investigation."
                 ),
                 evidence_transaction_ids=evidence_ids,
                 requires_human_review=True,
@@ -114,8 +117,9 @@ class FakeExceptionClassifier:
                     category=ClassificationCategory.REFUND_LAG,
                     confidence=75,
                     explanation=(
-                        f"Settlement {nearest['external_id']} exceeds the bank credit by "
-                        f"{delta} paise, consistent with a partial refund not yet settled."
+                        f"Settlement {nearest['external_id']} is {delta} paise more than the bank credit. "
+                        "This usually means a partial refund was deducted before settlement. "
+                        "A human should confirm the refund amount and approve if correct."
                     ),
                     evidence_transaction_ids=evidence_ids,
                     requires_human_review=True,
@@ -124,7 +128,11 @@ class FakeExceptionClassifier:
         return ExceptionClassification(
             category=ClassificationCategory.AMBIGUOUS_MATCH,
             confidence=60,
-            explanation="Deterministic strategies could not resolve this residue uniquely.",
+            explanation=(
+                "No automated rule could confidently match this bank credit to a settlement. "
+                "Multiple candidates exist or key fields are missing. A human reviewer should "
+                "examine the transactions and decide the correct match."
+            ),
             evidence_transaction_ids=evidence_ids,
             requires_human_review=True,
         )
@@ -138,15 +146,17 @@ GROQ_URL = "https://api.groq.com/openai/v1/chat/completions"
 
 SYSTEM_PROMPT = (
     "You are a finance reconciliation assistant. You classify one unresolved "
-    "exception at a time using only the facts provided. Respond with strict JSON "
-    "only; no prose before or after."
+    "exception at a time using only the facts provided. Write in plain, simple "
+    "language that a non-technical auditor can understand. Respond with strict "
+    "JSON only; no prose before or after."
 )
 
 PROMPT_TEMPLATE = """Classify the reconciliation exception described below.
 
 Return ONLY a JSON object with exactly these keys:
 {"category": "<one allowed category>", "confidence": <integer 0-100>,
- "explanation": "<one paragraph>", "evidence_transaction_ids": ["..."],
+ "explanation": "<one short paragraph in plain language>",
+ "evidence_transaction_ids": ["external_id values from the facts, NOT internal UUIDs"],
  "requires_human_review": true}
 
 Allowed categories: $allowed_categories
@@ -156,7 +166,8 @@ $exception_facts
 
 Rules:
 - Use only the facts above; never invent transaction ids or amounts.
-- Cite only transaction ids present in the facts.
+- In evidence_transaction_ids, cite the human-readable external_id values (e.g. "sett_9bcad5...", "pay_..."), NOT the internal UUID transaction_id values.
+- Write the explanation in plain language: avoid jargon, use short sentences, explain what happened and why it needs human review.
 - Always set requires_human_review to true.
 """
 
