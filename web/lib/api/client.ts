@@ -85,6 +85,10 @@ export async function listExceptions(): Promise<ExceptionRow[]> {
   return request<ExceptionRow[]>("/api/exceptions");
 }
 
+export async function clearAllExceptions(): Promise<{ cleared: boolean; tables_truncated: number }> {
+  return request("/api/exceptions", { method: "DELETE" });
+}
+
 export async function getException(id: string): Promise<ExceptionRow> {
   return request<ExceptionRow>(`/api/exceptions/${id}`);
 }

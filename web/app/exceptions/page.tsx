@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { RefreshCw } from "lucide-react";
+import { RefreshCw, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 
 import AuditTimeline from "@/components/reconciliation/AuditTimeline";
@@ -15,7 +15,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { classifyPending, listExceptions, listRuns, getRunMetrics } from "@/lib/api/client";
+import { classifyPending, clearAllExceptions, listExceptions, listRuns, getRunMetrics } from "@/lib/api/client";
 import type { ExceptionRow, EvaluationMetrics } from "@/lib/api/types";
 import { formatPct } from "@/lib/format";
 
@@ -80,6 +80,24 @@ export default function ExceptionsPage() {
       const result = await classifyPending(true);
       toast.success(`Classified ${result.classified} exceptions (${result.classifier})`);
       refresh();
+    } catch (e) {
+      toast.error((e as Error).message);
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  async function handleClear() {
+    const confirmed = window.confirm(
+      "Delete ALL exceptions, transactions, and audit logs? This cannot be undone."
+    );
+    if (!confirmed) return;
+    setBusy(true);
+    try {
+      await clearAllExceptions();
+      toast.success("All data cleared");
+      setRows([]);
+      setSelectedId(null);
     } catch (e) {
       toast.error((e as Error).message);
     } finally {
@@ -170,6 +188,15 @@ export default function ExceptionsPage() {
             onClick={handleClassify}
           >
             <RefreshCw className="size-3" /> Classify pending
+          </Button>
+          <Button
+            size="sm"
+            variant="destructive"
+            className="h-8 text-xs"
+            disabled={busy || rows.length === 0}
+            onClick={handleClear}
+          >
+            <Trash2 className="size-3" /> Clear all
           </Button>
         </div>
       </div>

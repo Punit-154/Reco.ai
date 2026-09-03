@@ -4,7 +4,7 @@ import uuid
 
 from fastapi import APIRouter, Depends, HTTPException
 from fastapi.responses import StreamingResponse
-from sqlalchemy import select
+from sqlalchemy import select, text
 from sqlalchemy.orm import Session
 
 from ..config import get_settings
@@ -191,6 +191,23 @@ def export_exceptions_csv(db: Session = Depends(get_db)):
         media_type="text/csv",
         headers={"Content-Disposition": "attachment; filename=exception_list.csv"},
     )
+
+
+RUNTIME_TABLES = (
+    "audit_logs, match_members, exceptions, transactions, ingestion_runs, "
+    "webhook_events, match_groups, sources, reconciliation_runs, evaluation_runs"
+)
+
+
+@router.delete("")
+def clear_all_exceptions(db: Session = Depends(get_db)):
+    try:
+        db.execute(text(f"TRUNCATE TABLE {RUNTIME_TABLES} RESTART IDENTITY CASCADE"))
+        db.commit()
+    except Exception as exc:
+        db.rollback()
+        raise HTTPException(status_code=500, detail=f"clear failed: {exc}") from exc
+    return {"cleared": True, "tables_truncated": len(RUNTIME_TABLES.split(","))}
 
 
 @router.get("/{exception_id}")
