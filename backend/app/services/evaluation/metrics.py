@@ -67,14 +67,26 @@ class DeterministicEvidenceChecker:
         if not cited:
             return 0.0
 
-        valid_ids = set()
+        valid_ids: set[str] = set()
+        valid_external_ids: set[str] = set()
+
         if exception.transaction_id is not None:
             valid_ids.add(str(exception.transaction_id))
-        evidence = exception.evidence or {}
-        for related in evidence.get("related_settlement_transaction_ids", []) or []:
-            valid_ids.add(str(related))
+            bank_txn = db.get(Transaction, exception.transaction_id)
+            if bank_txn is not None:
+                valid_external_ids.add(str(bank_txn.external_id))
 
-        supported = [c for c in cited if str(c) in valid_ids]
+        evidence = exception.evidence or {}
+        related_uuids = evidence.get("related_settlement_transaction_ids", []) or []
+        if related_uuids:
+            related_txns = db.execute(
+                select(Transaction).where(Transaction.id.in_(related_uuids))
+            ).scalars().all()
+            for txn in related_txns:
+                valid_ids.add(str(txn.id))
+                valid_external_ids.add(str(txn.external_id))
+
+        supported = [c for c in cited if str(c) in valid_ids or str(c) in valid_external_ids]
         return round(len(supported) / len(cited), 4)
 
 
