@@ -12,7 +12,7 @@ Finance teams waste hours manually matching settlement IDs across systems. Reco.
 2. **AI classification** — Groq-powered LLM classifies unmatched residue into actionable categories (fee deltas, refund lags, duplicates, etc.)
 3. **Human approval** — every AI decision requires human review with full audit trail
 
-**Result:** 75 auto-matched, 25 exceptions surfaced, all classified — in under 5 seconds.
+**Result:** 75 auto-matched, 25 exceptions surfaced, all classified .
 
 ## Key Features
 
