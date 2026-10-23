@@ -1,6 +1,4 @@
-# Render Blueprint — Reco.ai backend stack only.
-# The frontend (Next.js) is deployed on Vercel; only the FastAPI service
-# and the managed Postgres are managed here.
+# Render Blueprint — Reco.ai stack: FastAPI backend + Next.js web + Postgres.
 # Spec: https://render.com/docs/blueprint-spec
 services:
   - type: web
@@ -29,6 +27,22 @@ services:
       - key: GROQ_API_KEY
         sync: false
       - key: GROQ_MODEL
+        sync: false
+
+  - type: web
+    name: recoai-web
+    runtime: node
+    plan: free
+    rootDir: web
+    buildCommand: npm install && npm run build
+    startCommand: npm run start
+    healthCheckPath: /
+    envVars:
+      - key: NODE_VERSION
+        value: "22"
+      # Baked in at BUILD time (client.ts uses NEXT_PUBLIC_*). Point this at
+      # the opened backend URL after first sync; edit + Save redeploys.
+      - key: NEXT_PUBLIC_API_BASE_URL
         sync: false
 
 databases:
