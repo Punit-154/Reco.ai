@@ -1,0 +1,56 @@
+# Render Blueprint — Reco.ai demo stack
+# Backend (FastAPI) + Web (Next.js) + managed Postgres.
+# Spec: https://render.com/docs/blueprint-spec
+services:
+  - type: web
+    name: recoai-backend
+    runtime: python
+    plan: free
+    rootDir: backend
+    buildCommand: pip install -r requirements.txt
+    # Migrations run before the server starts on every deploy, so tables
+    # always exist. Uses DATABASE_URL injected from the database below.
+    startCommand: alembic upgrade head && uvicorn app.main:app --host 0.0.0.0 --port $PORT
+    healthCheckPath: /health
+    envVars:
+      - key: PYTHON_VERSION
+        value: "3.12"
+      - key: DATABASE_URL
+        fromDatabase:
+          name: recoai-db
+          property: connectionString
+      # Demo-only wildcard so the web service can talk to this API from any
+      # visitors' browsers. After first deploy, replace "*" with the exact
+      # web service URL (e.g. https://recoai-web-xxxx.onrender.com).
+      - key: CORS_ORIGINS
+        value: "*"
+      # Optional — live AI classification. Leave empty to use the offline
+      # rules-engine fallback.
+      - key: GROQ_API_KEY
+        sync: false
+      - key: GROQ_MODEL
+        sync: false
+
+  - type: web
+    name: recoai-web
+    runtime: node
+    plan: free
+    rootDir: web
+    buildCommand: npm install && npm run build
+    startCommand: npm run start
+    healthCheckPath: /
+    envVars:
+      - key: NODE_VERSION
+        value: "22"
+      # Baked in at BUILD time (client.ts uses NEXT_PUBLIC_*). Set this to the
+      # backend's public URL, e.g. https://recoai-backend.onrender.com — if the
+      # backend's real URL has a random suffix, update after first deploy and
+      # redeploy.
+      - key: NEXT_PUBLIC_API_BASE_URL
+        sync: false
+
+databases:
+  - name: recoai-db
+    databaseName: recoai
+    user: recoai
+    plan: free
