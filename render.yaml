@@ -1,5 +1,6 @@
-# Render Blueprint — Reco.ai demo stack
-# Backend (FastAPI) + Web (Next.js) + managed Postgres.
+# Render Blueprint — Reco.ai backend stack only.
+# The frontend (Next.js) is deployed on Vercel; only the FastAPI service
+# and the managed Postgres are managed here.
 # Spec: https://render.com/docs/blueprint-spec
 services:
   - type: web
@@ -19,9 +20,8 @@ services:
         fromDatabase:
           name: recoai-db
           property: connectionString
-      # Demo-only wildcard so the web service can talk to this API from any
-      # visitors' browsers. After first deploy, replace "*" with the exact
-      # web service URL (e.g. https://recoai-web-xxxx.onrender.com).
+      # Demo-only wildcard so the Vercel frontend (any visitors' browsers) can
+      # call this API. Replace "*" with the exact Vercel URL later to lock down.
       - key: CORS_ORIGINS
         value: "*"
       # Optional — live AI classification. Leave empty to use the offline
@@ -29,24 +29,6 @@ services:
       - key: GROQ_API_KEY
         sync: false
       - key: GROQ_MODEL
-        sync: false
-
-  - type: web
-    name: recoai-web
-    runtime: node
-    plan: free
-    rootDir: web
-    buildCommand: npm install && npm run build
-    startCommand: npm run start
-    healthCheckPath: /
-    envVars:
-      - key: NODE_VERSION
-        value: "22"
-      # Baked in at BUILD time (client.ts uses NEXT_PUBLIC_*). Set this to the
-      # backend's public URL, e.g. https://recoai-backend.onrender.com — if the
-      # backend's real URL has a random suffix, update after first deploy and
-      # redeploy.
-      - key: NEXT_PUBLIC_API_BASE_URL
         sync: false
 
 databases:
